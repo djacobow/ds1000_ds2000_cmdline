@@ -14,9 +14,12 @@ def wrap1(param, func):
         return func(param, *args, **kwargs)
     return wrap3
 
-class RigolDS1000z(object):
-    def __init__(self, ip=None):
-        self.configs = rigol_config.RIGOL_CONFIG 
+class RigolScope(object):
+    def __init__(self, ip=None, personality='ds1k'):
+        self.personality = personality
+        self.configs = rigol_config.RIGOL_CONFIG.get(personality)
+        if self.configs is None:
+            raise Exception(f'Do not know how to talk to {personality} type scope.')
 
         groups_config = (
             ('simple_2_args', self._simple_2_arg),
@@ -58,8 +61,32 @@ class RigolDS1000z(object):
                         rdict[aname] = rv
         return rdict
 
+
     def makeArgs(self, parser):
         self.arg_handlers = {}
+
+        def makeMetavars(validators):
+            num_validators = len(validators)
+            metametavars = []
+            for validator_idx in range(num_validators):
+                validator = validators[validator_idx]
+                final = validator_idx = num_validators-1
+                if  isinstance(validator[1],(list,tuple)):
+                    l = validator[1]
+                    metametavars.append(f"{{{','.join([str(x) for x in l])}}}")
+                else:
+                    l = [ re.sub(r'(\'|\s|class)','',str(x)) for x in validator[0] ]
+                    s = f"{'|'.join(l)}"
+                    if final:
+                        s = ''.join(['[',s,']'])
+                    metametavars.append(s)
+
+            metavar = None
+            if len(metametavars):
+                metavar = ':'.join(metametavars)
+
+            return metavar
+
 
         def make_simple_0_args(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
@@ -104,7 +131,9 @@ class RigolDS1000z(object):
                     if choices is not None:
                         choices = tuple(list(choices) + [''])
                     const = ''
-    
+
+                metavar = makeMetavars(validators)
+
                 parser_group.add_argument(
                     '--' + aname + '',
                     nargs='?',
@@ -112,8 +141,10 @@ class RigolDS1000z(object):
                     default=None,
                     type=ttype,
                     choices=choices,
+                    metavar=metavar,
                     help=config.get('help',None), 
                 )
+
 
         def make_simple_2_args(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
@@ -142,23 +173,7 @@ class RigolDS1000z(object):
                 elif num_validators == 3:
                     metavar='dec#:ch#:value or dec#:ch#'
    
-                metametavars = []
-                for validator_idx in range(num_validators):
-                    validator = validators[validator_idx]
-                    final = validator_idx = num_validators-1
-                    if  isinstance(validator[1],(list,tuple)):
-                        l = validator[1]
-                        metametavars.append(f"{{{','.join([str(x) for x in l])}}}")
-                    else:
-                        l = [ re.sub(r'(\'|\s|class)','',str(x)) for x in validator[0] ]
-                        s = f"{'|'.join(l)}"
-                        if final:
-                            s = ''.join(['[',s,']'])
-                        metametavars.append(s)
-
-                metavar = None
-                if len(metametavars):
-                    metavar = ':'.join(metametavars)
+                metavar = makeMetavars(validators)
 
                 parser_group.add_argument(
                     '--' + aname,
@@ -253,7 +268,7 @@ class RigolDS1000z(object):
             ofh.write(whole)
         return fn
 
-    def screenCap(self, fn=None, color=True, invert=False, fmt='png'):
+    def screenCap_ds1k(self, fn=None, color=True, invert=False, fmt='png'):
         if fn is None or not len(fn):
             now = self.fileSafeDate()
             fn = f'rigol_cap_{now}.{fmt}'
@@ -264,6 +279,37 @@ class RigolDS1000z(object):
         with open(fn,'wb') as ofh:
             ofh.write(inner)
         return fn
+
+    def screenCap_ds2k(self, fn=None):
+        if fn is None or not len(fn):
+            now = self.fileSafeDate()
+            fn = f'rigol_cap_{now}.bmp'
+        self._cmdo(f':DISPLAY:DATA?')
+        inner, whole = self.slurpRigolBlob()
+        with open(fn,'wb') as ofh:
+            ofh.write(inner)
+        return fn
+
+    def screenCap(self, fn=None, color=True, invert=False, fmt='png'):
+        if self.personality == 'ds1k':
+            return self.screenCap_ds1k(fn, color, invert, fmt)
+        elif self.personality == 'ds2k':
+            return self.screenCap_ds2k(fn)
+        else:
+            raise Exception('Do not know how to screencap from {personality}')
+
+    def setTime(self):
+        if self.personality == 'ds2k':
+            return self.setTime_ds2k()
+        else:  
+            raise Exception('Do not know how to set time on {personality}')
+
+    def setTime_ds2k(self):
+        now = datetime.datetime.now()
+        hours = now.hour
+        minutes = now.minute
+        seconds = now.second
+        self._cmdo(f':SYST:TIME {hours},{minutes},{seconds}')
 
     def _simple_0_arg(self, config):
         cmd = config.get('cmd')
