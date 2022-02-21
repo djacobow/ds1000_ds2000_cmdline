@@ -24,9 +24,10 @@ class RigolDS1000z(object):
             ('simple_0_args', self._simple_0_arg),
         )
         for gc in groups_config:
-            for name, config in self.configs.get(gc[0],{}).items():
-                wrapped_fn = wrap1(config, gc[1])
-                setattr(self, name, wrapped_fn)
+            for gname, gconfig in self.configs.get(gc[0],{}).items():
+                for name, config in gconfig.get('commands',{}).items():
+                    wrapped_fn = wrap1(config, gc[1])
+                    setattr(self, name, wrapped_fn)
 
         if ip is not None:
             self.connect(ip)
@@ -58,117 +59,150 @@ class RigolDS1000z(object):
         return rdict
 
     def makeArgs(self, parser):
-        query_group   = parser.add_argument_group(
-            title="Global Getters",
-            description='Queryable global settings',
-        )
-        channel_group = parser.add_argument_group(
-            title="Channel Setter/ Getters",
-            description='Setting that pertain to individual channels. Use channel:value to set the value, or just channel to read it'
-        )
-        action_group  = parser.add_argument_group(
-            title='Actions',
-            description='Global actions'
-        )
-        sg_group  = parser.add_argument_group(
-            title='Setter / Getters',
-            description='Various settings that can be set or read back'
-        )
         self.arg_handlers = {}
 
-        for name, config in self.configs.get('simple_0_args',{}).items():
-            aname = re.sub(r'_','-',name)
-            is_query = re.search(r'.*\?$',config['cmd'])
-            self.arg_handlers[name] = getattr(self, name)
-            if is_query:
-                query_group.add_argument(
-                    '--' + aname,
-                    default=None,
-                    action='store_true',
-                ) 
-            else:
-                action_group.add_argument(
+        def make_simple_0_args(parser_group, gconfig):
+            for name, config in gconfig.get('commands',{}).items():
+                aname = re.sub(r'_','-',name)
+                is_query = re.search(r'.*\?$',config['cmd'])
+                self.arg_handlers[name] = getattr(self, name)
+                parser_group.add_argument(
                     '--' + aname,
                     default=None,
                     action='store_true',
                 ) 
 
-        for name, config in self.configs.get('simple_1_args',{}).items():
-            aname = re.sub(r'_','-',name)
-            validators = config.get('validators',())
-            num_validators = len(validators)
+        def make_simple_1_args(parser_group, gconfig):
+            for name, config in gconfig.get('commands',{}).items():
+                
+                aname = re.sub(r'_','-',name)
+                validators = config.get('validators',())
+                num_validators = len(validators)
+    
+                if num_validators != 1:
+                    print(validators)
+                    raise Exception(f'One-arg functions should have only one arg: {name} {num_validators}!')
+    
+                self.arg_handlers[name + '']       = getattr(self, name)
+    
+                choices = None
+                ttype = None
+                if isinstance(validators[0][1],(list,tuple)):
+                    choices = validators[0][1] 
+                if isinstance(validators[0][0],(list,tuple)):
+                    ttype = validators[0][0][0]
+                elif isinstance(validators[0][0],(type,)):
+                    ttype = validators[0][0]
+    
+                const = False
+                if ttype == float:
+                    const = float('Nan')
+                elif ttype == int:
+                    const = float('Nan')
+                else:
+                    if choices is not None:
+                        choices = tuple(list(choices) + [''])
+                    const = ''
+    
+                parser_group.add_argument(
+                    '--' + aname + '',
+                    nargs='?',
+                    const=const,
+                    default=None,
+                    type=ttype,
+                    choices=choices,
+                    help=config.get('help',None), 
+                )
 
-            if num_validators != 1:
-                print(validators)
-                raise Exception(f'One-arg functions should have only one arg: {name} {num_validators}!')
+        def make_simple_2_args(parser_group, gconfig):
+            for name, config in gconfig.get('commands',{}).items():
+                aname = re.sub(r'_','-',name)
+                validators = config.get('validators',())
+                num_validators = len(validators)
+                self.arg_handlers[name] = getattr(self, name)
+    
+                if num_validators < 2:
+                   raise Exception(f'Error config for {aname} is wrong; should have at least 2 validators')
+    
+                choices_0 = None
+                choices_1 = None
+                choices = None
+                if num_validators == 2:
+                    if isinstance(validators[0][1],(list,tuple)):
+                        choices_0 = validators[0][1] 
+                    if isinstance(validators[1][1],(list,tuple)):
+                        choices_1 = validators[1][1] 
+                    if choices_0 is not None and choices_1 is not None:
+                        choices = []
+                        for ch0 in choices_0:
+                            choices += [ f'{ch0}' ]
+                            choices += [ f'{ch0}:{ch1}' for ch1 in choices_1 ]
 
-            self.arg_handlers[name + '']       = getattr(self, name)
+                elif num_validators == 3:
+                    metavar='dec#:ch#:value or dec#:ch#'
+   
+                metametavars = []
+                for validator_idx in range(num_validators):
+                    validator = validators[validator_idx]
+                    final = validator_idx = num_validators-1
+                    if  isinstance(validator[1],(list,tuple)):
+                        l = validator[1]
+                        metametavars.append(f"{{{','.join([str(x) for x in l])}}}")
+                    else:
+                        l = [ re.sub(r'(\'|\s|class)','',str(x)) for x in validator[0] ]
+                        s = f"{'|'.join(l)}"
+                        if final:
+                            s = ''.join(['[',s,']'])
+                        metametavars.append(s)
 
-            choices = None
-            ttype = None
-            if isinstance(validators[0][1],(list,tuple)):
-                choices = validators[0][1] 
-            if isinstance(validators[0][0],(list,tuple)):
-                ttype = validators[0][0][0]
-            elif isinstance(validators[0][0],(type,)):
-                ttype = validators[0][0]
+                metavar = None
+                if len(metametavars):
+                    metavar = ':'.join(metametavars)
 
-            const = False
-            if ttype == float:
-                const = float('Nan')
-            elif ttype == int:
-                const = float('Nan')
-            else:
-                choices = tuple(list(choices) + [''])
-                const = ''
+                parser_group.add_argument(
+                    '--' + aname,
+                    nargs='?',
+                    metavar=metavar,
+                    const='',
+                    type=str,
+                    choices=choices,
+                    help=config.get('help',None), 
+                )
 
-            sg_group.add_argument(
-                '--' + aname + '',
-                nargs='?',
-                const=const,
-                default=None,
-                type=ttype,
-                choices=choices,
-                help=config.get('help',None), 
-            )
+        command_types = (
+            ('simple_0_args', make_simple_0_args),
+            ('simple_1_args', make_simple_1_args),
+            ('simple_2_args', make_simple_2_args),
+        ) 
+
+        parser_groups = {}
+
+        for command_type in command_types:
+            for gname, gconfig in self.configs.get(command_type[0],{}).items():
+
+                if not gname in parser_groups:
+                    parser_group = parser.add_argument_group(
+                        title=gconfig.get('name',''),
+                        description=gconfig.get('description',None),
+                    )
+                    parser_groups[gname] = parser_group
+                else: 
+                    parser_group = parser_groups[gname]
+
+                command_type[1](parser_group, gconfig)
 
 
-        for name, config in self.configs.get('simple_2_args',{}).items():
-            aname = re.sub(r'_','-',name)
-            validators = config.get('validators',())
-            num_validators = len(validators)
-            self.arg_handlers[name] = getattr(self, name)
-
-            if num_validators != 2:
-               raise Exception(f'Error config for {aname} is wrong; should have exactl 2 validators')
-
-            choices_0 = None
-            choices_1 = None
-            choices = None
-            if isinstance(validators[0][1],(list,tuple)):
-                choices_0 = validators[0][1] 
-            if isinstance(validators[1][1],(list,tuple)):
-                choices_1 = validators[1][1] 
-            if choices_0 is not None and choices_1 is not None:
-                choices = []
-                for ch0 in choices_0:
-                    choices += [ f'{ch0}:{ch1}' for ch1 in choices_1 ]
-
-            channel_group.add_argument(
-                '--' + aname,
-                nargs='?',
-                metavar='ch#:value',
-                const='',
-                type=str,
-                choices=choices,
-                help=config.get('help',None), 
-            )
-
-    def _cmdo(self, c):
-        s = c + '\n'
-        b = s.encode('utf-8',errors='replace')
-        self.s.send(b)
-        print('-->',b)
+    def _cmdo(self, c, bdata=None):
+        if bdata is None:
+            s = c + '\n'
+            b = s.encode('utf-8',errors='replace')
+            self.s.send(b)
+            print('-->',b)
+        else:
+            b = (c + ' ').encode('utf-8',errors='replace')
+            b += bdata
+            self.s.send(b)
+            print('-->',c)
   
     def _cmdi(self):
         r = self.sr.readline().decode('ascii').strip()
@@ -179,13 +213,13 @@ class RigolDS1000z(object):
         self._cmdo(c)
         return self._cmdi()
 
-    def screenCap(self, fn=None):
-        if fn is None or not len(fn):
-            now = datetime.datetime.now().isoformat()
-            now = re.sub(r'\.\d+','',now)
-            now = re.sub(r'[\-\:]','_',now)
-            fn = f'rigol_cap_{now}.png'
-        self._cmdo(':DISPLAY:DATA? ON,OFF,PNG')
+    def fileSafeDate(self):
+        now = datetime.datetime.now().isoformat()
+        now = re.sub(r'\.\d+','',now)
+        now = re.sub(r'[\-\:]','_',now)
+        return now
+
+    def slurpRigolBlob(self):
         h0 = self.sr.read(1) # should be literal '#'
         h1 = self.sr.read(1)
         size_size = int(h1)
@@ -193,10 +227,39 @@ class RigolDS1000z(object):
         p = self.sr.read(size_size-1)
         size = int(p.decode('ascii'))
         d = self.sr.read(size)
-        with open(fn,'wb') as ofh:
-            ofh.write(d)
-
         endl = self.sr.read(1)
+        return d, h0 + h1 + h2 + p + d + endl
+ 
+    def restoreSetup(self, fn=None):
+        if fn is None:
+           raise Exception(f'File name is required to restore settings')
+        d = None
+        with open(fn, 'rb') as ifh:
+            d = ifh.read()
+        if d is None:
+           raise Exception(f'Did not read any setup data from file')
+
+        self._cmdo(':SYST:SET', d)
+        return fn
+
+    def saveSetup(self, fn=None):
+        if fn is None or not len(fn):
+            now = self.fileSafeDate()
+            fn = f'rigol_setup_{now}.dat'
+        self._cmdo(':SYST:SET?')
+        inner, whole = self.slurpRigolBlob()
+        with open(fn,'wb') as ofh:
+            ofh.write(whole)
+        return fn
+
+    def screenCap(self, fn=None):
+        if fn is None or not len(fn):
+            now = self.fileSafeDate()
+            fn = f'rigol_cap_{now}.png'
+        self._cmdo(':DISPLAY:DATA? ON,OFF,PNG')
+        inner, whole = self.slurpRigolBlob()
+        with open(fn,'wb') as ofh:
+            ofh.write(inner)
         return fn
 
     def _simple_0_arg(self, config):
@@ -259,12 +322,12 @@ class RigolDS1000z(object):
         validators = config.get('validators',())
         vcount = len(validators)
 
-        if vcount != 2:
-            raise Exception(f'configuration error; expect exactly 2 validators ({vcount})')
+        if vcount < 2:
+            raise Exception(f'configuration error; expect at leat 2 validators ({vcount})')
 
         subargs = []
 
-        if acount == 2:
+        if acount == vcount:
             subargs = args
         elif acount == 1:
             subargs = args[0].split(':')
@@ -274,16 +337,13 @@ class RigolDS1000z(object):
             subargs = converted_subargs
         self.expand_cmd_strs(config)
 
-        is_query = len(subargs) == 1
+        is_query = len(subargs) < vcount
 
-        d = {}
-        self.validate(subargs[0], config['validators'][0])
-        d['a0'] = subargs[0]
+        d = { f'a{i}' : subargs[i] for i in range(len(subargs)) }
 
-        if not is_query:
-            self.validate(subargs[1], config['validators'][1])
-            d['a1'] = subargs[1]
-         
+        for i in range(len(subargs)):
+            self.validate(subargs[i], config['validators'][i])
+
         if is_query:
             return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
         else:

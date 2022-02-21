@@ -29,6 +29,22 @@ class RigolCmdLine(object):
             const='',
             help='Name of image file to write'
         )
+        save_restore_group = parser.add_mutually_exclusive_group()
+
+        save_restore_group.add_argument(
+            '--save-settings','-d',
+            nargs='?',
+            type=str,
+            default=None,
+            const='',
+            help='Name of settings file to write'
+        )
+        save_restore_group.add_argument(
+            '--load-settings','-l',
+            type=str,
+            default=None,
+            help='Name of settings file to load'
+        )
 
         self.r.makeArgs(parser)
         return parser.parse_args()
@@ -40,6 +56,13 @@ class RigolCmdLine(object):
         if self.args.capture is not None:
             fn = self.r.screenCap(self.args.capture)
             print(f'Wrote image: {fn}')
+
+        if self.args.save_settings is not None:
+            fn = self.r.saveSetup(self.args.save_settings)
+            print(f'Wrote settings file: {fn}')
+        elif self.args.load_settings is not None:
+            fn = self.r.restoreSetup(self.args.load_settings)
+            print(f'Restored settings from file: {fn}')
 
 if __name__ == '__main__':
 
