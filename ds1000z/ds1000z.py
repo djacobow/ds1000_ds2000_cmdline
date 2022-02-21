@@ -70,6 +70,7 @@ class RigolDS1000z(object):
                     '--' + aname,
                     default=None,
                     action='store_true',
+                    help=config.get('help'),
                 ) 
 
         def make_simple_1_args(parser_group, gconfig):
@@ -252,11 +253,13 @@ class RigolDS1000z(object):
             ofh.write(whole)
         return fn
 
-    def screenCap(self, fn=None):
+    def screenCap(self, fn=None, color=True, invert=False, fmt='png'):
         if fn is None or not len(fn):
             now = self.fileSafeDate()
-            fn = f'rigol_cap_{now}.png'
-        self._cmdo(':DISPLAY:DATA? ON,OFF,PNG')
+            fn = f'rigol_cap_{now}.{fmt}'
+        color  = 'ON' if color else 'OFF'
+        invert = 'ON' if invert else 'OFF'
+        self._cmdo(f':DISPLAY:DATA? {color},{invert},{fmt}')
         inner, whole = self.slurpRigolBlob()
         with open(fn,'wb') as ofh:
             ofh.write(inner)

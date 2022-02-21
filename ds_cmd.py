@@ -21,7 +21,10 @@ class RigolCmdLine(object):
             help='Unit\'s IP address',
             default='192.168.1.246'
         )
-        parser.add_argument(
+        image_dumper_group = parser.add_argument_group(
+            title='Image Capture Options'
+        )
+        image_dumper_group.add_argument(
             '--capture','-c',
             nargs='?',
             type=str,
@@ -29,9 +32,29 @@ class RigolCmdLine(object):
             const='',
             help='Name of image file to write'
         )
-        save_restore_group = parser.add_mutually_exclusive_group()
+        image_dumper_group.add_argument(
+            '--bw',
+            action='store_true',
+            help='Make a black and white image',
+        )
+        image_dumper_group.add_argument(
+            '--invert',
+            action='store_true',
+            help='Invert the image colors',
+        )
+        image_dumper_group.add_argument(
+            '--image-format', '-f',
+            default='png',
+            type=str,
+            choices=('png','bmp8','bmp24','jpeg','tiff'),
+            help='Invert the image colors',
+        )
 
-        save_restore_group.add_argument(
+        sr_group = parser.add_argument_group(
+            title="Saving and Restoring Complete Settings"
+        )
+        srme_group = sr_group.add_mutually_exclusive_group()
+        srme_group.add_argument(
             '--save-settings','-d',
             nargs='?',
             type=str,
@@ -39,7 +62,7 @@ class RigolCmdLine(object):
             const='',
             help='Name of settings file to write'
         )
-        save_restore_group.add_argument(
+        srme_group.add_argument(
             '--load-settings','-l',
             type=str,
             default=None,
@@ -54,7 +77,12 @@ class RigolCmdLine(object):
         print(json.dumps(res,indent=2))
 
         if self.args.capture is not None:
-            fn = self.r.screenCap(self.args.capture)
+            fn = self.r.screenCap(
+                self.args.capture,
+                color = not self.args.bw,
+                invert = self.args.invert,
+                fmt = self.args.image_format
+            )
             print(f'Wrote image: {fn}')
 
         if self.args.save_settings is not None:

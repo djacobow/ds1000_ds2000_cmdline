@@ -2,7 +2,7 @@ from . import validators
 
 CONFIG = {
     'storage': {
-        'name': 'Storage and Images',
+        'name': 'Image Storage Defaults',
         'simple_1_args': {
             'image_type': {
                 'base_str': ':STOR:IMAG:TYPE',
