@@ -37,7 +37,7 @@ for personality, modules_configs in personality_configs.items():
         RIGOL_CONFIG[personality] = {}
     for m in modules_configs:
         for group_type, group_config in m.items():
-            for cmd_type in ('simple_0_args','simple_1_args','simple_2_args'):
+            for cmd_type in ('simple_0_args','simple_1_args','simple_2_args','real_functions'):
                 if cmd_type in group_config:
                     if not cmd_type in RIGOL_CONFIG[personality]:
                         RIGOL_CONFIG[personality][cmd_type] = {}

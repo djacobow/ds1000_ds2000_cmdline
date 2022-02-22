@@ -5,6 +5,7 @@ CONFIG = {
         'name': 'Global',
         'simple_0_args': {
             'id': {
+                'help': 'Get the instrument ID including serial number',
                 'cmd': '*IDN?',
             },
             'event_status': {
@@ -20,41 +21,52 @@ CONFIG = {
                 'cmd': '*WAI',
             },
             'auto': {
+                'help': 'equivalent to hitting the "auto" button on the unit',
                 'cmd': ':AUTOscale',
             },
             'clear': {
                 'cmd': ':CLEar',
             },
             'run': {
+                'help': 'set sweep to run',
                 'cmd': ':RUN',
             },
             'stop': {
+                'help': 'set sweep to stop',
                 'cmd': ':STOP',
             },
             'single': {
+                'help': 'set sweep once on trigger',
                 'cmd': ':SINGle',
             },
             'force_trigger': {
+                'help': 'force trigger immediately',
                 'cmd': ':TFORce',
             },
             'trig_status': {
+                'help': 'return trigger status',
                 'cmd': ':TRIG:STAT?',
             },
             'trig_position': {
+                'help': 'report trigger position',
                 'cmd': ':TRIG:POS?',
             },
             'sample_rate': {
+                'help': 'report sample rate',
                 'cmd': ':ACQ:SRAT?',
             },
             'calibrate': {
+                'help': 'report sample rate',
                 'cmd': ':CALIbrate:START',
             },
             'calibrate_quit': {
+                'help': 'start calibration routine',
                 'cmd': ':CALIbrate:QUIT',
             },
         },
         'simple_1_args': {
             'cursor_mode': {
+                'help': 'get/set cursor mode',
                 'base_str': ':CURSor:MODE',
                 'validators': (
                     validator.OptionValidator(('off','manual','track','auto','xy')),

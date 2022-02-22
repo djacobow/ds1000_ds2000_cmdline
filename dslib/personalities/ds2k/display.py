@@ -1,9 +1,32 @@
 from ... import validator
 from . import common_validators
 
+def screenCap(rs, args):
+    alen = len(args)
+    fn = None
+    if alen > 0:
+        fn = args[0]
+    if fn is None or not len(fn):
+        now = rs.fileSafeDate()
+        fn = f'rigol_cap_{now}.bmp'
+    rs._cmdo(f':DISPLAY:DATA?')
+    inner, whole = rs.slurpRigolBlob()
+    with open(fn,'wb') as ofh:
+        ofh.write(inner)
+    return fn
+
+
 CONFIG = {
     'display': {
         'name': 'Display',
+        'real_functions': {
+            'capture': {
+                'func': screenCap,
+                'validators': (
+                    validator.TypeValidator((str,None)),
+                ),
+            },
+        },
         'simple_0_args': {
             'disp_clear': {
                 'cmd': ':DISP:CLEar',

@@ -6,6 +6,7 @@ CONFIG = {
         'name': 'Channel',
         'simple_2_args': {
             'ch_scale': {
+                'help': 'Get/Set the channel gain',
                 'q_str':   ':CHAN{a0}:SCAL?',
                 'set_str': ':CHAN{a0}:SCAL {a1}',
                 'validators': (
@@ -15,6 +16,7 @@ CONFIG = {
                 'rtype': 'float',
             },
             'ch_probe': {
+                'help': 'Get/Set the probe attenuation displayed',
                 'q_str': ':CHAN{a0}:PROB?',
                 'set_str': ':CHAN{a0}:PROB {a1}',
                 'validators': (
@@ -24,6 +26,7 @@ CONFIG = {
                 'rtype': 'float',
             },
             'ch_display': {
+                'help': 'Get/Set channel display status',
                 'q_str': ':CHAN{a0}:DISP?',
                 'set_str': ':CHAN{a0}:DISP {a1}',
                 'validators': (
@@ -32,6 +35,7 @@ CONFIG = {
                 ),
             },
             'ch_bwlimit': {
+                'help': 'Apply bw limiting to channel',
                 'q_str': ':CHAN{a0}:BWL?',
                 'set_str': ':CHAN{a0}:BWL {a1}',
                 'validators': (
@@ -40,6 +44,7 @@ CONFIG = {
                 ),
             },
             'ch_coupling': {
+                'help': 'Get/set the channel coupling mode',
                 'q_str': ':CHAN{a0}:COUP?',
                 'set_str': ':CHAN{a0}:COUP {a1}',
                 'validators': (
@@ -48,6 +53,7 @@ CONFIG = {
                ),
             },
             'ch_invert': {
+                'help': 'Get/set the channel inversion mode',
                 'q_str': ':CHAN{a0}:INV?',
                 'set_str': ':CHAN{a0}:INV {a1}',
                 'validators': (
@@ -57,6 +63,7 @@ CONFIG = {
                 'rtype': 'int',
             },
             'ch_vernier': {
+                'help': 'Get/set vernier mode for channel gain',
                 'q_str': ':CHAN{a0}:VERN?',
                 'set_str': ':CHAN{a0}:VERN {a1}',
                 'validators': (
@@ -66,6 +73,7 @@ CONFIG = {
                 'rtype': 'int',
             },
             'ch_offset': {
+                'help': 'Get/set channel vertical offset',
                 'q_str': ':CHANnel{a0}:OFFSet?',
                 'set_str': ':CHANnel{a0}:OFFSet {a1}',
                 'validators': (

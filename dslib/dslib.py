@@ -20,9 +20,10 @@ class RigolScope(object):
             raise Exception(f'Do not know how to talk to {personality} type scope.')
 
         groups_config = (
-            ('simple_2_args', self._simple_2_arg),
-            ('simple_1_args', self._simple_1_arg),
-            ('simple_0_args', self._simple_0_arg),
+            ('simple_2_args',  self._wrapped_2set_1query_argument_function),
+            ('simple_1_args',  self._wrapped_1set_0query_argument_function),
+            ('simple_0_args',  self._wrapped_0_argument_function),
+            ('real_functions', self._unwrapped_function),
         )
         for gc in groups_config:
             for gname, gconfig in self.configs.get(gc[0],{}).items():
@@ -65,6 +66,9 @@ class RigolScope(object):
 
         def makeMetavars(validators):
             num_validators = len(validators)
+            if num_validators == 0:
+                return ''
+
             metametavars = []
             for validator_idx in range(num_validators):
                 validator = validators[validator_idx]
@@ -81,7 +85,24 @@ class RigolScope(object):
             return metavar
 
 
-        def make_simple_0_args(parser_group, gconfig):
+        def make_parseargs_for_unwrapped_function(parser_group, gconfig):
+            for name, config in gconfig.get('commands',{}).items():
+                aname = re.sub(r'_','-',name)
+                validators = config.get('validators',())
+                num_validators = len(validators)
+                self.arg_handlers[name] = getattr(self, name)
+
+                metavar = makeMetavars(validators)
+
+                parser_group.add_argument(
+                    '--' + aname,
+                    default=None,
+                    type=str,
+                    metavar=metavar,
+                    help=config.get('help'),
+                ) 
+
+        def make_parseargs_for_0arg_functions(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
                 aname = re.sub(r'_','-',name)
                 is_query = re.search(r'.*\?$',config['cmd'])
@@ -93,7 +114,7 @@ class RigolScope(object):
                     help=config.get('help'),
                 ) 
 
-        def make_simple_1_args(parser_group, gconfig):
+        def make_parseargs_for_1arg_functions(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
                 
                 aname = re.sub(r'_','-',name)
@@ -133,7 +154,7 @@ class RigolScope(object):
                 )
 
 
-        def make_simple_2_args(parser_group, gconfig):
+        def make_parseargs_for_2arg_functions(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
                 aname = re.sub(r'_','-',name)
                 validators = config.get('validators',())
@@ -169,9 +190,10 @@ class RigolScope(object):
                 )
 
         command_types = (
-            ('simple_0_args', make_simple_0_args),
-            ('simple_1_args', make_simple_1_args),
-            ('simple_2_args', make_simple_2_args),
+            ('simple_0_args',  make_parseargs_for_0arg_functions),
+            ('simple_1_args',  make_parseargs_for_1arg_functions),
+            ('simple_2_args',  make_parseargs_for_2arg_functions),
+            ('real_functions', make_parseargs_for_unwrapped_function),
         ) 
 
         parser_groups = {}
@@ -251,50 +273,7 @@ class RigolScope(object):
             ofh.write(whole)
         return fn
 
-    def screenCap_ds1k(self, fn=None, color=True, invert=False, fmt='png'):
-        if fn is None or not len(fn):
-            now = self.fileSafeDate()
-            fn = f'rigol_cap_{now}.{fmt}'
-        color  = 'ON' if color else 'OFF'
-        invert = 'ON' if invert else 'OFF'
-        self._cmdo(f':DISPLAY:DATA? {color},{invert},{fmt}')
-        inner, whole = self.slurpRigolBlob()
-        with open(fn,'wb') as ofh:
-            ofh.write(inner)
-        return fn
-
-    def screenCap_ds2k(self, fn=None):
-        if fn is None or not len(fn):
-            now = self.fileSafeDate()
-            fn = f'rigol_cap_{now}.bmp'
-        self._cmdo(f':DISPLAY:DATA?')
-        inner, whole = self.slurpRigolBlob()
-        with open(fn,'wb') as ofh:
-            ofh.write(inner)
-        return fn
-
-    def screenCap(self, fn=None, color=True, invert=False, fmt='png'):
-        if self.personality == 'ds1k':
-            return self.screenCap_ds1k(fn, color, invert, fmt)
-        elif self.personality == 'ds2k':
-            return self.screenCap_ds2k(fn)
-        else:
-            raise Exception('Do not know how to screencap from {personality}')
-
-    def setTime(self):
-        if self.personality == 'ds2k':
-            return self.setTime_ds2k()
-        else:  
-            raise Exception('Do not know how to set time on {personality}')
-
-    def setTime_ds2k(self):
-        now = datetime.datetime.now()
-        hours = now.hour
-        minutes = now.minute
-        seconds = now.second
-        self._cmdo(f':SYST:TIME {hours},{minutes},{seconds}')
-
-    def _simple_0_arg(self, config):
+    def _wrapped_0_argument_function(self, config):
         cmd = config.get('cmd')
         if cmd is None:
             raise Exception('Missing command specification')
@@ -320,6 +299,7 @@ class RigolScope(object):
                config['set_str'] = base_str + ' {a0}'
 
     def convert_to_type(self, tt, r_raw):
+        print('r_raw',type(r_raw),r_raw)
         if tt=='float' or tt==float:
             return float(r_raw)
         elif tt=='int' or tt==int:
@@ -329,7 +309,33 @@ class RigolScope(object):
     def convert_to_rtype(self, config, r_raw):
         return self.convert_to_type(config.get('rtype','str'), r_raw)
 
-    def _simple_2_arg(self, config, *args):
+
+    def _unwrapped_function(self, config, *args):
+        acount = len(args)
+        validators = config.get('validators',())
+        vcount = len(validators)
+
+        subargs = []
+
+        if acount == vcount:
+            subargs = args
+        elif acount == 1:
+            subargs = args[0].split(':')
+            converted_subargs = []
+            for i in range(len(subargs)):
+                converted_subargs.append(
+                    self.convert_to_type(validators[i].ttype(), subargs[i])
+                )
+            subargs = converted_subargs
+
+        for i in range(len(subargs)):
+            config['validators'][i].validate(subargs[i])
+
+        config['func'](self, subargs)
+
+
+
+    def _wrapped_2set_1query_argument_function(self, config, *args):
         acount = len(args)
         validators = config.get('validators',())
         vcount = len(validators)
@@ -341,7 +347,7 @@ class RigolScope(object):
 
         if acount == vcount:
             subargs = args
-        elif acount == 1:
+        elif acount == 1 and len(args[0]):
             subargs = args[0].split(':')
             converted_subargs = []
             for i in range(len(subargs)):
@@ -362,8 +368,7 @@ class RigolScope(object):
            self._cmdo(config.get('set_str').format(**d))
 
 
-
-    def _simple_1_arg(self, config, *args):
+    def _wrapped_1set_0query_argument_function(self, config, *args):
         acount = len(args)
         validators = config.get('validators',())
         vcount = len(validators)

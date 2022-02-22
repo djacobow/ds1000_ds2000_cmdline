@@ -40,10 +40,20 @@ I will be adding more over time.
 You can make a screenshot with:
 
 ```sh
-./ds1_cmd.py --capture foo.png
+./ds1_cmd.py --capture foo.png:color:normal:png
 ```
 
-You can see set the vertical scale is for channel 3 to 10V/div by saying:
+This writes `foo.png` in color, non-inverted, as a png.
+
+You could also do:
+```sh
+./ds1_cmd.py --capture :bw:invert:bmp8
+```
+
+And that would write a file with today's date as the name, in black and
+white and with the light and dark inverted,
+
+You can change the gain on channel 3 like this:
 
 ```sh
 ./ds1_cmd.py --ch-scale 3:10

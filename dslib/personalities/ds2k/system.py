@@ -1,9 +1,41 @@
 from ... import validator
 from . import common_validators
 
+def setTime(rs, args):
+    now = datetime.datetime.now()
+    hours = now.hour
+    minutes = now.minute
+    seconds = now.second
+    rs._cmd0(f':SYST:TIME {hours},{minutes},{seconds}')
+
+def storeSetup(rs, args):
+    rs.saveSetup(args[0])
+
+def loadSetup(rs, args):
+    rs.restoreSetup(args[0])
+
+
 CONFIG = {
     'system': {
         'name': 'System Commands',
+        'real_functions': {
+            'sys_settime': {
+                'func': setTime,
+                'validators': (),
+            },
+            'sys_store_setup': {
+                'func': storeSetup,
+                'validators': (
+                   validator.TypeValidator((str,None)),
+                ),
+            },
+            'sys_save_setup': {
+                'func': loadSetup,
+                'validators': (
+                   validator.TypeValidator(str),
+                ),
+            },
+        },
         'simple_0_args': {
             'sys_last_error': {
                 'cmd': ':SYST:ERR?',
