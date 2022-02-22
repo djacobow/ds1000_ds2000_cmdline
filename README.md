@@ -1,7 +1,8 @@
-# ds1000z_cmdline
+# ds1000_ds2000_cmdline
 
 Library and command-line utility for controlling the Rigol DS10xxZ and DS2xxx
-series scopes.  It also facilitates screen capture.
+series scopes.  It also facilitates screen capture and saving and restoring
+complete state.
 
 This is a work in progress, but the functions that are implemented so far
 seem to work.
