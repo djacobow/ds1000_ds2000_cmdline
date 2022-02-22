@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'system': {
@@ -30,38 +31,38 @@ CONFIG = {
             'sys_trig_out': {
                 'base_str': ':SYST:AOUT',
                 'validators': (
-                    ((str,), ('tout','pfail')),
+                    validator.OptionValidator(('tout','pfail')),
                 ),
             },
             'sys_enable_autoscale': {
                 'base_str': ':SYST:AUT',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_enable_beep': {
                 'base_str': ':SYST:BEEP',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_expand_reference': {
                 'base_str': ':SYST:EXP',
                 'validators': (
-                    ((str,), ('center','ground')),
+                    validator.OptionValidator(('center','ground')),
                 ),
             },
             'sys_gpip_addr': {
                 'base_str': ':SYST:GPIB',
                 'validators': (
-                    ((int,), lambda x: 1 <= x and x <= 30),
+                    validator.RangeValidator(1,30,int),
                 ),
             },
             'sys_keypress': {
                 'base_str': ':SYST:KEY:PRES',
                 'validators': (
-                    ((str,),
-                    ('ch1','ch2','math','ref','la','decode1','decode2','aoff',
+                    validator.OptionValidator(
+                     ('ch1','ch2','math','ref','la','decode1','decode2','aoff',
                      'moff','f1','f2','f3','f4','f5','f6','f7','qprevious','qnext',
                      'vposition','vposition1','vposition2','vscale','vscale1',
                      'vscale2','hscale','hposition','hmenu','kfunction','tlevel',
@@ -77,38 +78,38 @@ CONFIG = {
             'sys_key_increase': {
                 'base_str': ':SYST:KEY:INCR',
                 'validators': (
-                    ((int,), None),
+                    validator.TypeValidator(int),
                 ),
             },
             'sys_key_decrease': {
                 'base_str': ':SYST:KEY:DECR',
                 'validators': (
-                    ((int,), None),
+                    validator.TypeValidator(int),
                 ),
             },
             'sys_poweron_config': {
                 'base_str': ':SYST:PON',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_power_on_status': {
                 'base_str': ':SYST:PSTATUS',
                 'validators': (
-                    ((str,), ('default','open')),
+                    validator.OptionValidator(('default','open')),
                 ),
             },
             'sys_option_install': {
                 'base_str': ':SYST:OPT:INST',
                 'validators': (
-                    ((str,), None),
+                    validator.TypeValidator(str),
                 ),
             },
             'sys_language': {
                 'base_str': ':SYST:LANG',
                 'validators': (
-                    ((str,),
-                    ('schinese','tchinese','english','portuguese',
+                    validator.OptionValidator( 
+                     ('schinese','tchinese','english','portuguese',
                      'german','polish','korean','japanese','french',
                      'russian'
                     )),
@@ -117,14 +118,16 @@ CONFIG = {
             'sys_screensaver_timer': {
                 'base_str': ':SYST:SSAV:TIME',
                 'validators': (
-                    ((str,), ('1min','2min','5min','15min','30min',
-                              '45min','60min','2hour','5hour','off')),
+                    validator.OptionValidator(
+                        ('1min','2min','5min','15min','30min',
+                         '45min','60min','2hour','5hour','off')
+                    ),
                 ),
             },
             'sys_usb_device_mode': {
                 'base_str': ':SYST:UDEV',
                 'validators': (
-                    ((str,), ('computer','pictbridge')),
+                    validator.OptionValidator(('computer','pictbridge')),
                 ),
             },
         }

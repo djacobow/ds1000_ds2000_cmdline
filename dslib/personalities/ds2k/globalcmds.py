@@ -1,3 +1,5 @@
+from ... import validator
+
 CONFIG = {
     'global': {
         'name': 'Global',
@@ -43,13 +45,13 @@ CONFIG = {
             'event_register_mask': {
                 'base_str': ':*ESE',
                 'validators': (
-                    ((int,), lambda x: 0 <= x and x <=255),
+                    validator.RangeValidator(0,255,int),
                 ),
             },
             'enable_register_state': {
                 'base_str': ':*SRE',
                 'validators': (
-                    ((int,), lambda x: 0 <= x and x <=255),
+                    validator.RangeValidator(0,255,int),
                 ),
             },
         },

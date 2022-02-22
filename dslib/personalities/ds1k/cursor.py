@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'cursor_man': {
@@ -30,49 +31,49 @@ CONFIG = {
             'cursor_manual_type': {
                 'base_str': ':CURSor:MANual:TYPE',
                 'validators': (
-                    ((str,), ('x','y')),
+                    validator.OptionValidator(('x','y')),
                 ),
             },
             'cursor_manual_source': {
                 'base_str': ':CURSor:MANual:SOUR',
                 'validators': (
-                    ((str,), ('chan1','chan2','chan3','chan4','math','la')),
+                    validator.OptionValidator(('chan1','chan2','chan3','chan4','math','la')),
                 ),
             },
             'cursor_manual_time_unit': {
                 'base_str': ':CURSor:MANual:TUN',
                 'validators': (
-                    ((str,), ('s','hz','degree','percent')),
+                    validator.OptionValidator(('s','hz','degree','percent')),
                 ),
             },
             'cursor_manual_vertical_unit': {
                 'base_str': ':CURSor:MANual:VUN',
                 'validators': (
-                    ((str,), ('percent','source')),
+                    validator.OptionValidator(('percent','source')),
                 ),
             },
             'cursor_manual_ax': {
                 'base_str': ':CURSor:MANual:AX',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:BX',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_manual_ay': {
                 'base_str': ':CURSor:MANual:AY',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:BY',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
         },
@@ -112,25 +113,25 @@ CONFIG = {
             'cursor_track_source1': {
                 'base_str': ':CURSor:TRACk:SOURce1',
                 'validators': (
-                    ((str,), ('off', 'chan1','chan2','chan3','chan4','math')),
+                    validator.OptionValidator(('off', 'chan1','chan2','chan3','chan4','math')),
                 ),
             },
             'cursor_track_source2': {
                 'base_str': ':CURSor:TRACk:SOURce2',
                 'validators': (
-                    ((str,), ('off','chan1','chan2','chan3','chan4','math')),
+                    validator.OptionValidator(('off','chan1','chan2','chan3','chan4','math')),
                 ),
             },
             'cursor_track_ax': {
                 'base_str': ':CURSor:TRACk:AX',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_track_bx': {
                 'base_str': ':CURSor:TRACk:BX',
                 'validators': (
-                validators.cursor_pos,
+                common_validators.cursor_pos,
                 ),
             },
         },
@@ -184,25 +185,25 @@ CONFIG = {
             'cursor_xy_ax': {
                 'base_str': ':CURSor:XY:AX',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_xy_ay': {
                 'base_str': ':CURSor:XY:AY',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_xy_bx': {
                 'base_str': ':CURSor:XY:BX',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
             'cursor_xy_by': {
                 'base_str': ':CURSor:XY:BY',
                 'validators': (
-                    validators.cursor_pos,
+                    common_validators.cursor_pos,
                 ),
             },
         }

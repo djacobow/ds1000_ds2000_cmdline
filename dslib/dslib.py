@@ -8,9 +8,7 @@ import socket
 from . import rigol_config
 
 def wrap1(param, func):
-    # print(f'in wrap1, param: {param}, func: {func}')
     def wrap3(*args, **kwargs):
-        # print(f'in wrap3, param: {param}, func: {func}, args: {",".join([str(x) for x in args])}')
         return func(param, *args, **kwargs)
     return wrap3
 
@@ -71,15 +69,10 @@ class RigolScope(object):
             for validator_idx in range(num_validators):
                 validator = validators[validator_idx]
                 final = validator_idx = num_validators-1
-                if  isinstance(validator[1],(list,tuple)):
-                    l = validator[1]
-                    metametavars.append(f"{{{','.join([str(x) for x in l])}}}")
-                else:
-                    l = [ re.sub(r'(\'|\s|class)','',str(x)) for x in validator[0] ]
-                    s = f"{'|'.join(l)}"
-                    if final:
-                        s = ''.join(['[',s,']'])
-                    metametavars.append(s)
+                mmv = validator.metametavar()
+                if final:
+                    mmv = ''.join(['[',mmv,']'])
+                metametavars.append(mmv)
 
             metavar = None
             if len(metametavars):
@@ -113,14 +106,8 @@ class RigolScope(object):
     
                 self.arg_handlers[name + '']       = getattr(self, name)
     
-                choices = None
-                ttype = None
-                if isinstance(validators[0][1],(list,tuple)):
-                    choices = validators[0][1] 
-                if isinstance(validators[0][0],(list,tuple)):
-                    ttype = validators[0][0][0]
-                elif isinstance(validators[0][0],(type,)):
-                    ttype = validators[0][0]
+                choices = validators[0].choices()
+                ttype = validators[0].ttype()
     
                 const = False
                 if ttype == float:
@@ -156,14 +143,10 @@ class RigolScope(object):
                 if num_validators < 2:
                    raise Exception(f'Error config for {aname} is wrong; should have at least 2 validators')
     
-                choices_0 = None
-                choices_1 = None
+                choices_0 = validators[0].choices()
+                choices_1 = validators[1].choices()
                 choices = None
                 if num_validators == 2:
-                    if isinstance(validators[0][1],(list,tuple)):
-                        choices_0 = validators[0][1] 
-                    if isinstance(validators[1][1],(list,tuple)):
-                        choices_1 = validators[1][1] 
                     if choices_0 is not None and choices_1 is not None:
                         choices = []
                         for ch0 in choices_0:
@@ -346,26 +329,6 @@ class RigolScope(object):
     def convert_to_rtype(self, config, r_raw):
         return self.convert_to_type(config.get('rtype','str'), r_raw)
 
-    def validate(self, val, validator):
-        allowed_types = validator[0]
-        if not isinstance(val, allowed_types):
-            raise Exception(f'Argument must be of type: {", ".join([repr(x) for x in allowed_types])}')
-
-        validator_fn = validator[1]
-        if validator_fn is None:
-            pass 
-        elif callable(validator_fn):
-            ok = validator_fn(val)
-            if ok is not None and not ok:
-                raise Exception(f'Argument rejected')
-                return
-        elif isinstance(validator_fn,(list,tuple)):
-            if isinstance(val, str):
-                val = val.lower()
-                if not val in validator_fn:
-                   raise Exception(f'argument must be one of {", ".join(validator_fn)}')
-                   return
-
     def _simple_2_arg(self, config, *args):
         acount = len(args)
         validators = config.get('validators',())
@@ -382,7 +345,7 @@ class RigolScope(object):
             subargs = args[0].split(':')
             converted_subargs = []
             for i in range(len(subargs)):
-                converted_subargs.append(self.convert_to_type(validators[i][0][0], subargs[i]))
+                converted_subargs.append(self.convert_to_type(validators[i].ttype(), subargs[i]))
             subargs = converted_subargs
         self.expand_cmd_strs(config)
 
@@ -391,7 +354,7 @@ class RigolScope(object):
         d = { f'a{i}' : subargs[i] for i in range(len(subargs)) }
 
         for i in range(len(subargs)):
-            self.validate(subargs[i], config['validators'][i])
+            config['validators'][i].validate(subargs[i])
 
         if is_query:
             return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
@@ -424,7 +387,7 @@ class RigolScope(object):
         if not is_query:
             in_arg = args[0]
             validator = validators[0]
-            self.validate(in_arg, validator)
+            validator.validate(in_arg)
             d['a0'] = in_arg
             self._cmdo(config.get('set_str').format(**d))
 

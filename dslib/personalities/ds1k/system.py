@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'system': {
@@ -18,41 +19,42 @@ CONFIG = {
             'sys_enable_autoscale': {
                 'base_str': ':SYST:AUT',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_enable_beep': {
                 'base_str': ':SYST:BEEP',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_lock_keyboard': {
                 'base_str': ':SYST:LOCK',
                 'validators': (
-                    ((str,), ('latest','default')),
+                    validator.OptionValidator(('latest','default')),
                 ),
             },
             'sys_poweron_config': {
                 'base_str': ':SYST:PON',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'sys_option_install': {
                 'base_str': ':SYST:OPT:INST',
                 'validators': (
-                    ((str,), None),
+                    validator.TypeValidator(str),
                 ),
             },
             'sys_language': {
                 'base_str': ':SYST:LANG',
                 'validators': (
-                    ((str,),
-                    ('schinese','tchinese','english','portuguese',
-                     'german','polish','korean','japanese','french',
-                     'russian'
-                    )),
+                    validator.OptionValidator(
+                        ('schinese','tchinese','english','portuguese',
+                         'german','polish','korean','japanese','french',
+                         'russian'
+                        )
+                    ),
                 ),
             },
         }

@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'network': {
@@ -24,43 +25,43 @@ CONFIG = {
             'net_dhcp': {
                 'base_str': ':LAN:DHCP',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'net_autoip': {
                 'base_str': ':LAN:AUToip',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'net_gateway': {
                 'base_str': ':LAN:GATeway',
                 'validators': (
-                    validators.ip_addr,
+                    common_validators.ip_addr,
                 ),
             },
             'net_dns': {
                 'base_str': ':LAN:DNS',
                 'validators': (
-                    validators.ip_addr,
+                    common_validators.ip_addr,
                 ),
             },
             'net_manual': {
                 'base_str': ':LAN:MANual',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'net_ipaddr': {
                 'base_str': ':LAN:IPAD',
                 'validators': (
-                    validators.ip_addr,
+                    common_validators.ip_addr,
                 ),
             },
             'net_subnet': {
                 'base_str': ':LAN:SMASk',
                 'validators': (
-                    validators.ip_addr,
+                    common_validators.ip_addr,
                 ),
             },
         }

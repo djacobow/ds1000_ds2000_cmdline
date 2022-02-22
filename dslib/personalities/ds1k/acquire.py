@@ -1,3 +1,5 @@
+from ... import validator
+
 CONFIG = {
     'acquire': {
         'name': 'Acquisition',
@@ -5,21 +7,21 @@ CONFIG = {
             'acq_average': {
                 'base_str': ':ACQ:AVER',
                 'validators': (
-                    ((int,), None),
+                    validator.TypeValidator(int),
                 ),
                 'rtype': 'int',
             },
             'acq_depth': {
                 'base_str': ':ACQ:MDEPTH',
                 'validators': (
-                    ((int,), None),
+                    validator.TypeValidator(int),
                 ),
                 'rtype': 'int',
             },
             'acq_type': {
                 'base_str': ':ACQ:TYPE',
                 'validators': (
-                    ((str,), ('normal','averages','peak','hresolution')),
+                    validator.TypeValidator(int),
                 ),
             },
         },

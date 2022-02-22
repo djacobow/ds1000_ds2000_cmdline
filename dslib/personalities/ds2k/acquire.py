@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'acquire': {
@@ -12,14 +13,14 @@ CONFIG = {
             'acq_average': {
                 'base_str': ':ACQ:AVER',
                 'validators': (
-                    ((int,), lambda x: x <= 1 and x <= 13),
+                    validator.RangeValidator(1,13,int),
                 ),
                 'rtype': 'int',
             },
             'acq_depth': {
                 'base_str': ':ACQ:MDEPTH',
                 'validators': (
-                    ((str,),
+                    validator.OptionValidator(
                      ('auto','14000','140000','1400000', '14000000', '56000000',
                       '7000','70000','700000','7000000','28000000'),
                     ),
@@ -28,13 +29,13 @@ CONFIG = {
             'acq_type': {
                 'base_str': ':ACQ:TYPE',
                 'validators': (
-                    ((str,), ('normal','averages','peak','hresolution')),
+                    validator.OptionValidator(('normal','averages','peak','hresolution')),
                 ),
             },
             'acq_antialias': {
                 'base_str': ':ACQ:AALI',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
         },

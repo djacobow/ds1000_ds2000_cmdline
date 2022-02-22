@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'storage': {
@@ -7,19 +8,19 @@ CONFIG = {
             'image_type': {
                 'base_str': ':STOR:IMAG:TYPE',
                 'validators': (
-                    ((str,), ('png','bmp8','bmp24','jpeg','tiff')),
+                    validator.OptionValidator(('png','bmp8','bmp24','jpeg','tiff')),
                 ),
             },
             'image_invert': {
                 'base_str': ':STOR:IMAG:INVERT',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'image_color': {
                 'base_str': ':STOR:IMAG:COLor',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
         }

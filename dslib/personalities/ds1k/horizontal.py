@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'horizontal': {
@@ -7,31 +8,31 @@ CONFIG = {
             'horiz_delay': {
                 'base_str': ':TIM:DEL:ENAB',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'horiz_delay_offset': {
                 'base_str': ':TIM:DEL:OFFS',
                 'validators': (
-                    ((float,int),None),
+                    validator.TypeValidator((float,int)),
                 ),
             },
             'horiz_offset': {
                 'base_str': ':TIM:MAIN:OFFS',
                 'validators': (
-                    ((float,int),None),
+                    validator.TypeValidator((float,int)),
                 ),
             },
             'horiz_mode': {
                 'base_str': ':TIM:MODE',
                 'validators': (
-                    ((str,),('main','xy','roll')),
+                    validator.OptionValidator(('main','xy','roll')),
                 ),
             },
             'horiz_scale': {
                 'base_str': ':TIMebase:MAIN:SCALe',
                 'validators': (
-                    ((float,int,),
+                    validator.OptionValidator(
                         (
                             5e-9,
                             1e-8, 2e-8, 5e-8,
@@ -45,6 +46,7 @@ CONFIG = {
                             1, 2, 5,
                             10, 20, 50,
                         ),
+                        (float, int)
                     ),
                 ),
                 'rtype': 'float',

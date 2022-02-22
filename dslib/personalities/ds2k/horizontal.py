@@ -1,4 +1,5 @@
-from . import validators
+from ... import validator
+from . import common_validators
 
 CONFIG = {
     'horizontal': {
@@ -7,55 +8,55 @@ CONFIG = {
             'horiz_delay': {
                 'base_str': ':TIM:DEL:ENAB',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'horiz_delay_offset': {
                 'base_str': ':TIM:DEL:OFFS',
                 'validators': (
-                    ((float,int),None),
+                    validator.TypeValidator((float,int)),
                 ),
             },
             'horiz_delay_scale': {
                 'base_str': ':TIM:DEL:SCALe',
                 'validators': (
-                    ((float,int),None),
+                    validator.TypeValidator((float,int)),
                 ),
             },
             'horiz_offset': {
                 'base_str': ':TIM:MAIN:OFFS',
                 'validators': (
-                    ((float,int),None),
+                    validator.TypeValidator((float,int)),
                 ),
             },
             'horiz_reference_mode': {
                 'base_str': ':TIM:HREF:MODE',
                 'validators': (
-                    ((str,), ('center','tposition','user')),
+                    validator.OptionValidator(('center','tposition','user')),
                 ),
             },
             'horiz_reference_position': {
                 'base_str': ':TIM:HREF:POS',
                 'validators': (
-                    ((int,), lambda x: -350 <= x and x <= 350),
+                    validator.RangeValidator(-350,350,int),
                 ),
             },
             'horiz_mode': {
                 'base_str': ':TIM:MODE',
                 'validators': (
-                    ((str,),('main','xy','roll')),
+                    validator.OptionValidator(('main','xy','roll')),
                 ),
             },
             'horiz_mode': {
                 'base_str': ':TIM:VERN',
                 'validators': (
-                    validators.on_off,
+                    common_validators.on_off,
                 ),
             },
             'horiz_scale': {
                 'base_str': ':TIMebase:MAIN:SCALe',
                 'validators': (
-                    ((float,int,),
+                    validator.OptionValidator(
                         (
                             1e-9, 5e-9,
                             1e-8, 2e-8, 5e-8,
@@ -69,6 +70,7 @@ CONFIG = {
                             1, 2, 5,
                             10, 20, 50,
                         ),
+                        (float,int)
                     ),
                 ),
                 'rtype': 'float',

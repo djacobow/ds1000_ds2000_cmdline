@@ -1,3 +1,5 @@
+from ... import validator
+
 CONFIG = {
     'global': {
         'name': 'Global',
@@ -55,7 +57,7 @@ CONFIG = {
             'cursor_mode': {
                 'base_str': ':CURSor:MODE',
                 'validators': (
-                    ((str,), ('off','manual','track','auto','xy')),
+                    validator.OptionValidator(('off','manual','track','auto','xy')),
                 ),
             },
         },
