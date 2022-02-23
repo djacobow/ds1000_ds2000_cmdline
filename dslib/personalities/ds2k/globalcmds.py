@@ -3,7 +3,7 @@ from ... import validator
 CONFIG = {
     'global': {
         'name': 'Global',
-        'simple_0_args': {
+        'commands': {
             'auto': {
                 'cmd': ':AUTOscale',
             },
@@ -41,7 +41,7 @@ CONFIG = {
                 'cmd': '*TST?',
             },
         },
-        'simple_1_args': {
+        'commands': {
             'event_register_mask': {
                 'base_str': ':*ESE',
                 'validators': (

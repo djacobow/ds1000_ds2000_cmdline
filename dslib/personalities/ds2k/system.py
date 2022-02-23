@@ -9,7 +9,7 @@ def setTime(rs, args):
     rs._cmd0(f':SYST:TIME {hours},{minutes},{seconds}')
 
 def storeSetup(rs, args):
-    rs.saveSetup(args[0])
+    rs.saveSetup(args[0] if len(args) else None)
 
 def loadSetup(rs, args):
     rs.restoreSetup(args[0])
@@ -18,7 +18,7 @@ def loadSetup(rs, args):
 CONFIG = {
     'system': {
         'name': 'System Commands',
-        'real_functions': {
+        'commands': {
             'sys_settime': {
                 'func': setTime,
                 'validators': (),
@@ -35,8 +35,6 @@ CONFIG = {
                    validator.TypeValidator(str),
                 ),
             },
-        },
-        'simple_0_args': {
             'sys_last_error': {
                 'cmd': ':SYST:ERR?',
             },
@@ -58,8 +56,6 @@ CONFIG = {
             'sys_version': {
                 'cmd': ':SYST:VERSion?',
             },
-        },
-        'simple_1_args': {
             'sys_trig_out': {
                 'base_str': ':SYST:AOUT',
                 'validators': (

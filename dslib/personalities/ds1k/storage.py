@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'storage': {
         'name': 'Image Storage Defaults',
-        'simple_1_args': {
+        'commands': {
             'image_type': {
                 'base_str': ':STOR:IMAG:TYPE',
                 'validators': (

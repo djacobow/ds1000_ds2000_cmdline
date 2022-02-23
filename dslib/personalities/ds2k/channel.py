@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'channel': {
         'name': 'Channel',
-        'simple_2_args': {
+        'commands': {
             'ch_scale': {
                 'q_str':   ':CHAN{a0}:SCAL?',
                 'set_str': ':CHAN{a0}:SCAL {a1}',

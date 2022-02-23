@@ -4,12 +4,10 @@ from . import common_validators
 CONFIG = {
     'acquire': {
         'name': 'Acquisition',
-        'simple_0_args': {
+        'commands': {
             'sample_rate': {
                 'cmd': ':ACQ:SRAT?',
             },
-        },
-        'simple_1_args': {
             'acq_average': {
                 'base_str': ':ACQ:AVER',
                 'validators': (

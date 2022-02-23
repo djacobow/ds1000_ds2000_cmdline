@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'network': {
         'name': 'Network Commands',
-        'simple_0_args': {
+        'commands': {
             'net_mac_addr': {
                 'help': 'Get the unit\'s MAC address',
                 'cmd': ':LAN:MAC?',
@@ -24,8 +24,6 @@ CONFIG = {
                 'help': 'Apply changes to network settings.',
                 'cmd': ':LAN:APPLy',
             },
-        },
-        'simple_1_args': {
             'net_dhcp': {
                 'help': 'Enable DHCP client',
                 'base_str': ':LAN:DHCP',

@@ -19,20 +19,16 @@ def screenCap(rs, args):
 CONFIG = {
     'display': {
         'name': 'Display',
-        'real_functions': {
+        'commands': {
             'capture': {
                 'func': screenCap,
                 'validators': (
                     validator.TypeValidator((str,None)),
                 ),
             },
-        },
-        'simple_0_args': {
             'disp_clear': {
                 'cmd': ':DISP:CLEar',
-            }
-        },
-        'simple_1_args': {
+            },
             'disp_type': {
                 'base_str': ':DISP:TYPE',
                 'validators': (

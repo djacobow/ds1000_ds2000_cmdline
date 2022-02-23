@@ -3,7 +3,7 @@ from ... import validator
 CONFIG = {
     'global': {
         'name': 'Global',
-        'simple_0_args': {
+        'commands': {
             'id': {
                 'help': 'Get the instrument ID including serial number',
                 'cmd': '*IDN?',
@@ -63,8 +63,6 @@ CONFIG = {
                 'help': 'start calibration routine',
                 'cmd': ':CALIbrate:QUIT',
             },
-        },
-        'simple_1_args': {
             'cursor_mode': {
                 'help': 'get/set cursor mode',
                 'base_str': ':CURSor:MODE',

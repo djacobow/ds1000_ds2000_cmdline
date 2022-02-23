@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'cursor_man': {
         'name': 'Manual Cursor',
-        'simple_0_args': {
+        'commands': {
             'cursor_manual_ax_val': {
                 'cmd': ':CURSor:MANual:AXValue?',
             },
@@ -26,8 +26,6 @@ CONFIG = {
             'cursor_manual_y_delta': {
                 'cmd': ':CURSor:MANual:YDELta?',
             },
-        },
-        'simple_1_args': {
             'cursor_mode': {
                 'base_str': ':CURSor:MODE',
                 'validators': (
@@ -86,7 +84,7 @@ CONFIG = {
     },
     'cursor_track': {
         'name': 'Tracking Cursor',
-        'simple_0_args': {
+        'commands': {
             'cursor_track_ax_val': {
                 'cmd': ':CURSor:TRACk:AXValue?',
             },
@@ -114,8 +112,6 @@ CONFIG = {
             'cursor_track_by': {
                 'cmd': ':CURSor:TRACk:CBY?',
             },
-        },
-        'simple_1_args': {
             'cursor_track_source1': {
                 'base_str': ':CURSor:TRACk:SOURce1',
                 'validators': (

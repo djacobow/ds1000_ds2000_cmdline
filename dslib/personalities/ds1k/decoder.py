@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'decoder': {
         'name': 'Decoder Shared',
-        'simple_2_args': {
+        'commands': {
             'decoder_mode': {
                 'q_str':   ':DEC{a0}:MODE?',
                 'set_str': ':DEC{a0}:MODE {a1}',
@@ -100,7 +100,7 @@ CONFIG = {
     },
     'decoder_uart': {
         'name': 'UART Decoder Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_uart_tx_source': {
                 'q_str':   ':DEC{a0}:UART:TX?',
                 'set_str': ':DEC{a0}:UART:TX {a1}',
@@ -169,7 +169,7 @@ CONFIG = {
     },
     'decoder_iic': {
         'name': 'Decoder I2C Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_iic_scl': {
                 'q_str':   ':DEC{a0}:IIC:CLK?',
                 'set_str': ':DEC{a0}:IIC:CLK {a1}',
@@ -198,7 +198,7 @@ CONFIG = {
     },
     'decoder_spi': {
         'name': 'Decoder SPI Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_spi_mclk': {
                 'q_str':   ':DEC{a0}:SPI:CLK?',
                 'set_str': ':DEC{a0}:SPI:CLK {a1}',
@@ -291,7 +291,7 @@ CONFIG = {
     },
     'decoder_parallel': {
     'name': 'Parallel Decoder Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_parallel_clk': {
                 'q_str':   ':DEC{a0}:PAR:CLK?',
                 'set_str': ':DEC{a0}:PAR:CLK {a1}',

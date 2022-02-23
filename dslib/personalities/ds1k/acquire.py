@@ -3,7 +3,7 @@ from ... import validator
 CONFIG = {
     'acquire': {
         'name': 'Acquisition',
-        'simple_1_args': {
+        'commands': {
             'acq_average': {
                 'base_str': ':ACQ:AVER',
                 'validators': (

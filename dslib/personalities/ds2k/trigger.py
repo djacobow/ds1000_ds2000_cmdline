@@ -4,12 +4,10 @@ from . import common_validators
 CONFIG = {
     'trigger': {
         'name': 'Trigger',
-        'simple_0_args': {
+        'commands': {
             'trig_status': {
                 'cmd': 'TRIGger:STATus?',
             },
-        },
-        'simple_1_args': {
             'trig_mode': {
                 'base_str': ':TRIG:MODE',
                 'validators': (

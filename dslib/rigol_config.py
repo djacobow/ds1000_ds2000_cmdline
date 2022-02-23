@@ -37,13 +37,12 @@ for personality, modules_configs in personality_configs.items():
         RIGOL_CONFIG[personality] = {}
     for m in modules_configs:
         for group_type, group_config in m.items():
-            for cmd_type in group_config.keys():
-                if cmd_type != 'name':
-                    if not group_type in RIGOL_CONFIG[personality]:
-                        RIGOL_CONFIG[personality][group_type] = {}
-                    if not 'commands' in RIGOL_CONFIG[personality][group_type]:
-                        RIGOL_CONFIG[personality][group_type]['commands'] = {}
-                    RIGOL_CONFIG[personality][group_type]['commands'].update(group_config[cmd_type])
-                    if not 'name' in RIGOL_CONFIG[personality][group_type]:
-                        RIGOL_CONFIG[personality][group_type]['name'] = group_config['name']
+            new_commands = group_config.get('commands',{})
+            if not group_type in RIGOL_CONFIG[personality]:
+                RIGOL_CONFIG[personality][group_type] = {}
+            if not 'commands' in RIGOL_CONFIG[personality][group_type]:
+                RIGOL_CONFIG[personality][group_type]['commands'] = {}
+            RIGOL_CONFIG[personality][group_type]['commands'].update(new_commands)
+            if not 'name' in RIGOL_CONFIG[personality][group_type]:
+                RIGOL_CONFIG[personality][group_type]['name'] = group_config['name']
 

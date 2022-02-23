@@ -29,7 +29,7 @@ def screenCap(rs, args):
 CONFIG = {
     'display': {
         'name': 'Display',
-        'real_functions': {
+        'commands': {
             'capture': {
                 'func': screenCap,
                 'help': 'Save an image to disk exactly as it appears on sreen, in color or bw, or with the colors inverted',
@@ -39,9 +39,7 @@ CONFIG = {
                     validator.OptionValidator(('invert','normal')),
                     validator.OptionValidator(('bmp8','bmp24','png','jpeg','tiff')),
                 )
-            }
-        },
-        'simple_1_args': {
+            },
             'disp_type': {
                 'help': 'Show traces as vector of connected lines or just dots',
                 'base_str': ':DISP:TYPE',

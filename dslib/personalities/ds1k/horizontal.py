@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'horizontal': {
         'name': 'Horizontal',
-        'simple_1_args': {
+        'commands': {
             'horiz_delay': {
                 'base_str': ':TIM:DEL:ENAB',
                 'validators': (

@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'trigger': {
         'name': 'Trigger',
-        'simple_1_args': {
+        'commands': {
             'trig_mode': {
                 'base_str': ':TRIG:MODE',
                 'validators': (

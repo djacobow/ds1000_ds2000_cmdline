@@ -4,15 +4,13 @@ from . import common_validators
 CONFIG = {
     'decoder': {
         'name': 'Decoder Shared',
-        'simple_1_args': {
+        'commands': {
             'decoder_table_export': {
                 'set_str': ':BUS{a0}:MODE {a1}',
                 'validators': (
                     common_validators.decoder_number,
                 ),
-            }
-        },
-        'simple_2_args': {
+            },
             'decoder_mode': {
                 'q_str':   ':BUS{a0}:MODE?',
                 'set_str': ':BUS{a0}:MODE {a1}',
@@ -49,7 +47,7 @@ CONFIG = {
     },
     'decoder_uart': {
         'name': 'UART Decoder Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_uart_tx_source': {
                 'q_str':   ':BUS{a0}:RS232:TX?',
                 'set_str': ':BUS{a0}:RS232:TX {a1}',
@@ -161,7 +159,7 @@ CONFIG = {
     },
     'decoder_iic': {
         'name': 'Decoder I2C Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_iic_scl': {
                 'q_str':   ':BUS{a0}:IIC:SCLK:SOUR?',
                 'set_str': ':BUS{a0}:IIC:SCLK:SOUR {a1}',
@@ -206,7 +204,7 @@ CONFIG = {
     },
     'decoder_spi': {
         'name': 'Decoder SPI Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_spi_mclk': {
                 'q_str':   ':BUS{a0}:SPI:SCLK:SOUR?',
                 'set_str': ':BUS{a0}:SPI:SCLK:SOUR {a1}',
@@ -323,7 +321,7 @@ CONFIG = {
     },
     'decoder_parallel': {
     'name': 'Parallel Decoder Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_parallel_clk': {
                 'q_str':   ':BUS{a0}:PAR:CLK?',
                 'set_str': ':BUS{a0}:PAR:CLK {a1}',
@@ -373,7 +371,7 @@ CONFIG = {
     },
     'decoder_can': {
     'name': 'CAN Decoder Settings',
-        'simple_2_args': {
+        'commands': {
             'decoder_can_source': {
                 'q_str':   ':BUS{a0}:CAN:SOUR?',
                 'set_str': ':BUS{a0}:CAN:SOUR {a1}',

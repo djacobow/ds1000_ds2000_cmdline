@@ -4,7 +4,7 @@ from . import common_validators
 CONFIG = {
     'cursor_man': {
         'name': 'Manual Cursor',
-        'simple_0_args': {
+        'commands': {
             'cursor_manual_ax_val': {
                 'cmd': ':CURSor:MANual:AXValue?',
             },
@@ -26,8 +26,6 @@ CONFIG = {
             'cursor_manual_y_delta': {
                 'cmd': ':CURSor:MANual:YDELta?',
             },
-        },
-        'simple_1_args': {
             'cursor_manual_type': {
                 'base_str': ':CURSor:MANual:TYPE',
                 'validators': (
@@ -80,7 +78,7 @@ CONFIG = {
     },
     'cursor_track': {
         'name': 'Tracking Cursor',
-        'simple_0_args': {
+        'commnds': {
             'cursor_track_ax_val': {
                 'cmd': ':CURSor:TRACk:AXValue?',
             },
@@ -108,8 +106,6 @@ CONFIG = {
             'cursor_track_by': {
                 'cmd': ':CURSor:TRACk:BY?',
             },
-        },
-        'simple_1_args': {
             'cursor_track_source1': {
                 'base_str': ':CURSor:TRACk:SOURce1',
                 'validators': (
@@ -138,7 +134,7 @@ CONFIG = {
     },
     'cursor_auto': {
         'name': 'Automatic Cursor',
-        'simple_0_args': {
+        'commands': {
             'cursor_auto_ax_val': {
                 'cmd': ':CURSor:AUTO:AXValue?',
             },
@@ -167,7 +163,7 @@ CONFIG = {
     },
     'cursor_xymode': {
         'name': 'XY Mode Cursor',
-        'simple_0_args': {
+        'commands': {
             'cursor_xy_ax_val': {
                 'cmd': ':CURSor:XY:AXValue?',
             },
@@ -180,8 +176,6 @@ CONFIG = {
             'cursor_xy_by_val': {
                 'cmd': ':CURSor:XY:BYValue?',
             },
-        },
-        'simple_1_args': {
             'cursor_xy_ax': {
                 'base_str': ':CURSor:XY:AX',
                 'validators': (

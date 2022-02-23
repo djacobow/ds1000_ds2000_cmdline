@@ -14,7 +14,7 @@ measure_source = validator.OptionValidator(
 
 decoder_number = validator.OptionValidator((1,2), types=int)
 channel_number = validator.OptionValidator((1,2), types=int)
-on_off         = validator.OptionValidator((1,0,'on','off'), types=(str,int,))
+on_off         = validator.OptionValidator((1,0,'1','0','on','off'), types=(str,int,))
 is_percent     = validator.RangeValidator(0,100,int)
 cursor_pos_x   = validator.RangeValidator(0,699,int)
 cursor_pos_y   = validator.RangeValidator(0,399,int)

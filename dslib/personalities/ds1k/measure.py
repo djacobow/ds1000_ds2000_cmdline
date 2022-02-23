@@ -14,7 +14,7 @@ summary_type = validator.OptionValidator(('maximum','minimum','current','average
 CONFIG = {
     'measure': {
         'name': 'Measurements',
-        'simple_0_args': {
+        'commands': {
             'measure_counter_value': {
                 'cmd': 'MEAS:COUN:VAL?',
             },    
@@ -30,8 +30,6 @@ CONFIG = {
             'measure_statistic_reset': {
                 'cmd': 'MEAS:STAT:RESet',
             },    
-         },
-        'simple_1_args': {
             'measure_source': {
                 'base_str': ':MEAS:SOURce',
                 'validators': (
@@ -98,8 +96,6 @@ CONFIG = {
                     validator.OptionValidator(('difference','extremum')),
                 ),
             },
-        },
-        'simple_2_args': {
             'measure_statistic_set_item': {
                 'set_str': ':MEAS:STAT:ITEM {a0},{a1}',
                 'validators': (
