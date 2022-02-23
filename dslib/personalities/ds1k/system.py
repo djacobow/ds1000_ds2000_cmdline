@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 def storeSetup(rs, args):
     rs.saveSetup(args[0] if len(args) else None)
@@ -14,15 +14,15 @@ CONFIG = {
              'sys_store_setup': {
                  'help': 'Store complete scope state to file.',
                  'func': storeSetup,
-                 'validators': (
-                    validator.TypeValidator((str,None)),
+                 'argspecs': (
+                    argspec.TypeArgSpec((str,None)),
                  ),
              },
              'sys_save_setup': {
                  'help': 'Restore complete scope state from file.',
                  'func': loadSetup,
-                 'validators': (
-                    validator.TypeValidator(str),
+                 'argspecs': (
+                    argspec.TypeArgSpec(str),
                  ),
              },
              'sys_last_error': {
@@ -37,43 +37,43 @@ CONFIG = {
              'sys_enable_autoscale': {
                  'help': 'Enable or disable the autoscale feature',
                  'base_str': ':SYST:AUT',
-                 'validators': (
-                     common_validators.on_off,
+                 'argspecs': (
+                     common_argspecs.on_off,
                  ),
              },
              'sys_enable_beep': {
                  'help': 'Enable or disable system beeps',
                  'base_str': ':SYST:BEEP',
-                 'validators': (
-                     common_validators.on_off,
+                 'argspecs': (
+                     common_argspecs.on_off,
                  ),
              },
              'sys_lock_keyboard': {
                  'help': 'Lock or unlock the control panel keys',
                  'base_str': ':SYST:LOCK',
-                 'validators': (
-                     validator.OptionValidator(('latest','default')),
+                 'argspecs': (
+                     argspec.OptionArgSpec(('latest','default')),
                  ),
              },
              'sys_poweron_config': {
                  'help': 'Rembmer last settings on poweron',
                  'base_str': ':SYST:PON',
-                 'validators': (
-                     common_validators.on_off,
+                 'argspecs': (
+                     common_argspecs.on_off,
                  ),
              },
              'sys_option_install': {
                  'help': 'Install new software options with key',
                  'base_str': ':SYST:OPT:INST',
-                 'validators': (
-                     validator.TypeValidator(str),
+                 'argspecs': (
+                     argspec.TypeArgSpec(str),
                  ),
              },
              'sys_language': {
                  'help': 'Set display language (does not affect API)',
                  'base_str': ':SYST:LANG',
-                 'validators': (
-                     validator.OptionValidator(
+                 'argspecs': (
+                     argspec.OptionArgSpec(
                          ('schinese','tchinese','english','portuguese',
                           'german','polish','korean','japanese','french',
                           'russian'

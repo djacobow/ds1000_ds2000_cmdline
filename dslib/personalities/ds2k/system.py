@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 def setTime(rs, args):
     now = datetime.datetime.now()
@@ -21,18 +21,18 @@ CONFIG = {
         'commands': {
             'sys_settime': {
                 'func': setTime,
-                'validators': (),
+                'argspecs': (),
             },
             'sys_store_setup': {
                 'func': storeSetup,
-                'validators': (
-                   validator.TypeValidator((str,None)),
+                'argspecs': (
+                   argspec.TypeArgSpec((str,None)),
                 ),
             },
             'sys_save_setup': {
                 'func': loadSetup,
-                'validators': (
-                   validator.TypeValidator(str),
+                'argspecs': (
+                   argspec.TypeArgSpec(str),
                 ),
             },
             'sys_last_error': {
@@ -58,38 +58,38 @@ CONFIG = {
             },
             'sys_trig_out': {
                 'base_str': ':SYST:AOUT',
-                'validators': (
-                    validator.OptionValidator(('tout','pfail')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('tout','pfail')),
                 ),
             },
             'sys_enable_autoscale': {
                 'base_str': ':SYST:AUT',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'sys_enable_beep': {
                 'base_str': ':SYST:BEEP',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'sys_expand_reference': {
                 'base_str': ':SYST:EXP',
-                'validators': (
-                    validator.OptionValidator(('center','ground')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('center','ground')),
                 ),
             },
             'sys_gpip_addr': {
                 'base_str': ':SYST:GPIB',
-                'validators': (
-                    validator.RangeValidator(1,30,int),
+                'argspecs': (
+                    argspec.RangeArgSpec(1,30,int),
                 ),
             },
             'sys_keypress': {
                 'base_str': ':SYST:KEY:PRES',
-                'validators': (
-                    validator.OptionValidator(
+                'argspecs': (
+                    argspec.OptionArgSpec(
                      ('ch1','ch2','math','ref','la','decode1','decode2','aoff',
                      'moff','f1','f2','f3','f4','f5','f6','f7','qprevious','qnext',
                      'vposition','vposition1','vposition2','vscale','vscale1',
@@ -105,38 +105,38 @@ CONFIG = {
             },
             'sys_key_increase': {
                 'base_str': ':SYST:KEY:INCR',
-                'validators': (
-                    validator.TypeValidator(int),
+                'argspecs': (
+                    argspec.TypeArgSpec(int),
                 ),
             },
             'sys_key_decrease': {
                 'base_str': ':SYST:KEY:DECR',
-                'validators': (
-                    validator.TypeValidator(int),
+                'argspecs': (
+                    argspec.TypeArgSpec(int),
                 ),
             },
             'sys_poweron_config': {
                 'base_str': ':SYST:PON',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'sys_power_on_status': {
                 'base_str': ':SYST:PSTATUS',
-                'validators': (
-                    validator.OptionValidator(('default','open')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('default','open')),
                 ),
             },
             'sys_option_install': {
                 'base_str': ':SYST:OPT:INST',
-                'validators': (
-                    validator.TypeValidator(str),
+                'argspecs': (
+                    argspec.TypeArgSpec(str),
                 ),
             },
             'sys_language': {
                 'base_str': ':SYST:LANG',
-                'validators': (
-                    validator.OptionValidator( 
+                'argspecs': (
+                    argspec.OptionArgSpec( 
                      ('schinese','tchinese','english','portuguese',
                      'german','polish','korean','japanese','french',
                      'russian'
@@ -145,8 +145,8 @@ CONFIG = {
             },
             'sys_screensaver_timer': {
                 'base_str': ':SYST:SSAV:TIME',
-                'validators': (
-                    validator.OptionValidator(
+                'argspecs': (
+                    argspec.OptionArgSpec(
                         ('1min','2min','5min','15min','30min',
                          '45min','60min','2hour','5hour','off')
                     ),
@@ -154,8 +154,8 @@ CONFIG = {
             },
             'sys_usb_device_mode': {
                 'base_str': ':SYST:UDEV',
-                'validators': (
-                    validator.OptionValidator(('computer','pictbridge')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('computer','pictbridge')),
                 ),
             },
         }

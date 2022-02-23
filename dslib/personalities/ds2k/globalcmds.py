@@ -1,4 +1,4 @@
-from ... import validator
+from ... import argspec
 
 CONFIG = {
     'global': {
@@ -44,14 +44,14 @@ CONFIG = {
         'commands': {
             'event_register_mask': {
                 'base_str': ':*ESE',
-                'validators': (
-                    validator.RangeValidator(0,255,int),
+                'argspecs': (
+                    argspec.RangeArgSpec(0,255,int),
                 ),
             },
             'enable_register_state': {
                 'base_str': ':*SRE',
-                'validators': (
-                    validator.RangeValidator(0,255,int),
+                'argspecs': (
+                    argspec.RangeArgSpec(0,255,int),
                 ),
             },
         },

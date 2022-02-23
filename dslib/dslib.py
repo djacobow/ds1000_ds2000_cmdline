@@ -59,22 +59,22 @@ class RigolScope(object):
     def makeArgs(self, parser):
         self.arg_handlers = {}
 
-        def makeMetavars(validators):
-            num_validators = len(validators)
-            if num_validators == 0:
+        def makeMetavars(argspecs):
+            num_argspecs = len(argspecs)
+            if num_argspecs == 0:
                 return ''
 
             metametavars = []
-            for validator_idx in range(num_validators):
-                validator = validators[validator_idx]
-                final = validator_idx == num_validators-1
-                mmv = validator.metametavar()
+            for argspec_idx in range(num_argspecs):
+                argspec = argspecs[argspec_idx]
+                final = argspec_idx == num_argspecs-1
+                mmv = argspec.metametavar()
                 # if there is only on arg and it is optional,
                 # then argparse will add the brackets. But if there
                 # is more than one, we need to add them because 
                 # as far as argparse is concerned, they are all just
                 # shmooshed together as one
-                if final and num_validators != 1:
+                if final and num_argspecs != 1:
                     mmv = ''.join(['[',mmv,']'])
                 metametavars.append(mmv)
 
@@ -84,9 +84,9 @@ class RigolScope(object):
 
             return metavar
 
-        def enumerate_arg_choices(validators):
+        def enumerate_arg_choices(argspecs):
             choices = None
-            set_choices_list = [ v.choices() for v in validators ]
+            set_choices_list = [ v.choices() for v in argspecs ]
             set_choices = None
             if not None in set_choices_list:
                 set_choices = [
@@ -114,12 +114,12 @@ class RigolScope(object):
         def make_parseargs_generic(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
                 aname = re.sub(r'_','-',name)
-                validators = config.get('validators',())
-                num_validators = len(validators)
+                argspecs = config.get('argspecs',())
+                num_argspecs = len(argspecs)
                 self.arg_handlers[name] = getattr(self, name)
 
                 flag_name = '--' + aname
-                if num_validators == 0:
+                if num_argspecs == 0:
                     parser_group.add_argument(
                         flag_name,
                         action='store_true',
@@ -127,10 +127,10 @@ class RigolScope(object):
                     ) 
 
                 else:
-                    choices = enumerate_arg_choices(validators)
-                    metavar = makeMetavars(validators)
+                    choices = enumerate_arg_choices(argspecs)
+                    metavar = makeMetavars(argspecs)
 
-                    if num_validators == 1:
+                    if num_argspecs == 1:
                         parser_group.add_argument(
                             flag_name,
                             nargs='?',
@@ -269,8 +269,8 @@ class RigolScope(object):
         #print('START','args',args,'types',[repr(type(x)) for x in args])
         name = config.get('name','<unknown>')
 
-        validators = config.get('validators',())
-        vcount = len(validators)
+        argspecs = config.get('argspecs',())
+        vcount = len(argspecs)
 
         acount = len(args)
 
@@ -295,19 +295,19 @@ class RigolScope(object):
                    args.append(splitargs[i])
 
         # now that we have (maybe) split the args, let's try to convert
-        # them to the types the validator expects
+        # them to the types the argspec expects
         converted_args = []
         for i in range(acount):
-            converted_args.append(self.convert_to_type(validators[i].ttype(), args[i]))
+            converted_args.append(self.convert_to_type(argspecs[i].ttype(), args[i]))
         args = converted_args
 
         if acount < (vcount - 1):
             raise Exception(f'For function {name}: expects {vcount} (set) or {vcount-1} (get) arguments, only {acount} provided')
        
         # now make sure the arguments are actually acceptable to the command
-        # validator raises if not
+        # argspec raises if not
         for i in range(acount):
-            (ok, reason) = validators[i].validate(args[i])
+            (ok, reason) = argspecs[i].validate(args[i])
             if not ok:
                 raise Exception(f'For function {name} argument {i}: {reason}')
 

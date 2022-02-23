@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'horizontal': {
@@ -7,56 +7,56 @@ CONFIG = {
         'commands': {
             'horiz_delay': {
                 'base_str': ':TIM:DEL:ENAB',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'horiz_delay_offset': {
                 'base_str': ':TIM:DEL:OFFS',
-                'validators': (
-                    validator.TypeValidator((float,int)),
+                'argspecs': (
+                    argspec.TypeArgSpec((float,int)),
                 ),
             },
             'horiz_delay_scale': {
                 'base_str': ':TIM:DEL:SCALe',
-                'validators': (
-                    validator.TypeValidator((float,int)),
+                'argspecs': (
+                    argspec.TypeArgSpec((float,int)),
                 ),
             },
             'horiz_offset': {
                 'base_str': ':TIM:MAIN:OFFS',
-                'validators': (
-                    validator.TypeValidator((float,int)),
+                'argspecs': (
+                    argspec.TypeArgSpec((float,int)),
                 ),
             },
             'horiz_reference_mode': {
                 'base_str': ':TIM:HREF:MODE',
-                'validators': (
-                    validator.OptionValidator(('center','tposition','user')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('center','tposition','user')),
                 ),
             },
             'horiz_reference_position': {
                 'base_str': ':TIM:HREF:POS',
-                'validators': (
-                    validator.RangeValidator(-350,350,int),
+                'argspecs': (
+                    argspec.RangeArgSpec(-350,350,int),
                 ),
             },
             'horiz_mode': {
                 'base_str': ':TIM:MODE',
-                'validators': (
-                    validator.OptionValidator(('main','xy','roll')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('main','xy','roll')),
                 ),
             },
             'horiz_mode': {
                 'base_str': ':TIM:VERN',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'horiz_scale': {
                 'base_str': ':TIMebase:MAIN:SCALe',
-                'validators': (
-                    validator.OptionValidator(
+                'argspecs': (
+                    argspec.OptionArgSpec(
                         (
                             1e-9, 5e-9,
                             1e-8, 2e-8, 5e-8,

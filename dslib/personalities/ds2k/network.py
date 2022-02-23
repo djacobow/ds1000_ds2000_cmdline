@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'network': {
@@ -22,44 +22,44 @@ CONFIG = {
             },
             'net_dhcp': {
                 'base_str': ':LAN:DHCP',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_autoip': {
                 'base_str': ':LAN:AUToip',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_gateway': {
                 'base_str': ':LAN:GATeway',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_dns': {
                 'base_str': ':LAN:DNS',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_manual': {
                 'base_str': ':LAN:MANual',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_ipaddr': {
                 'base_str': ':LAN:IPAD',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_subnet': {
                 'base_str': ':LAN:SMASk',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
         }

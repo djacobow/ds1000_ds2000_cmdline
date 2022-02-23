@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 def screenCap(rs, args):
     alen = len(args)
@@ -33,46 +33,46 @@ CONFIG = {
             'capture': {
                 'func': screenCap,
                 'help': 'Save an image to disk exactly as it appears on sreen, in color or bw, or with the colors inverted',
-                'validators': (
-                    validator.TypeValidator((str,None)),
-                    validator.OptionValidator(('color','bw')),
-                    validator.OptionValidator(('invert','normal')),
-                    validator.OptionValidator(('bmp8','bmp24','png','jpeg','tiff')),
+                'argspecs': (
+                    argspec.TypeArgSpec((str,None)),
+                    argspec.OptionArgSpec(('color','bw')),
+                    argspec.OptionArgSpec(('invert','normal')),
+                    argspec.OptionArgSpec(('bmp8','bmp24','png','jpeg','tiff')),
                 )
             },
             'disp_type': {
                 'help': 'Show traces as vector of connected lines or just dots',
                 'base_str': ':DISP:TYPE',
-                'validators': (
-                    validator.OptionValidator(('vectors','dots')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('vectors','dots')),
                 ),
             },
             'disp_grading_time': {
                 'help': 'Time to fade out intensity-graded trace',
                 'base_str': ':DISP:GRAD:TIME',
-                'validators': (
-                    validator.OptionValidator(('min','inf','infinite',0.1,0.2,0.5,1,5,10),(str,float,int)),
+                'argspecs': (
+                    argspec.OptionArgSpec(('min','inf','infinite',0.1,0.2,0.5,1,5,10),(str,float,int)),
                 ),
             },
             'disp_wave_brightness': {
                 'help': 'percent brightness for trace',
                 'base_str': ':DISP:WBR',
-                'validators': (
-                    common_validators.is_percent,
+                'argspecs': (
+                    common_argspecs.is_percent,
                 ),
             },
             'disp_grid_brightness': {
                 'help': 'percent brightness for graticule',
                 'base_str': ':DISP:GBR',
-                'validators': (
-                    common_validators.is_percent,
+                'argspecs': (
+                    common_argspecs.is_percent,
                 ),
             },
             'disp_grid': {
                 'help': 'show full, partial, or no graticule',
                 'base_str': ':DISP:GRID',
-                'validators': (
-                    validator.OptionValidator(('full','half','none')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('full','half','none')),
                 ),
             },
         },

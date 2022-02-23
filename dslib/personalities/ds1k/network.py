@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'network': {
@@ -27,50 +27,50 @@ CONFIG = {
             'net_dhcp': {
                 'help': 'Enable DHCP client',
                 'base_str': ':LAN:DHCP',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_autoip': {
                 'help': 'Enable Auto-IP (picking own address)',
                 'base_str': ':LAN:AUToip',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_gateway': {
                 'help': 'Set or get the gateway address',
                 'base_str': ':LAN:GATeway',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_dns': {
                 'help': 'Get or set the DNS address',
                 'base_str': ':LAN:DNS',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_manual': {
                 'help': 'Manually configure network',
                 'base_str': ':LAN:MANual',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
             'net_ipaddr': {
                 'help': 'Get or set the current IP address',
                 'base_str': ':LAN:IPAD',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
             'net_subnet': {
                 'help': 'Get or set the subnet mask',
                 'base_str': ':LAN:SMASk',
-                'validators': (
-                    common_validators.ip_addr,
+                'argspecs': (
+                    common_argspecs.ip_addr,
                 ),
             },
         }

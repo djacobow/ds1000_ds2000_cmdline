@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-class Validator(object):
+class ArgSpec(object):
 
     def __init__(self):
         pass
@@ -15,7 +15,7 @@ class Validator(object):
     def ttype(self):
         return self.types[0]
 
-class OptionValidator(Validator):
+class OptionArgSpec(ArgSpec):
     def __init__(self, l, types=(str,)):
         self.types = types if isinstance(types,(list,tuple,)) else tuple([types])
         self.options = l
@@ -37,7 +37,7 @@ class OptionValidator(Validator):
         return self.options
 
 
-class TypeValidator(Validator):
+class TypeArgSpec(ArgSpec):
     def __init__(self, types=(float,)):
         self.types = types if isinstance(types,(list,tuple)) else (types,)
 
@@ -51,7 +51,7 @@ class TypeValidator(Validator):
         return f'{tstr}'
 
 
-class RangeValidator(Validator):
+class RangeArgSpec(ArgSpec):
     def __init__(self, rmin, rmax, types=(float,)):
         if rmax < rmin:
             (rmin, rmax) = (rmax, rmin)
@@ -73,7 +73,7 @@ class RangeValidator(Validator):
 
 
 
-class FunctionValidator(Validator):
+class FunctionArgSpec(ArgSpec):
     def __init__(self, func, types=(str,), message=''):
         self.func = func
         self.message = message
@@ -94,13 +94,13 @@ class FunctionValidator(Validator):
 if __name__ == '__main__':
 
     if False:
-        w = OptionValidator(('x','y','z'))
+        w = OptionArgSpec(('x','y','z'))
         w.validate('x')
         print(w.metametavar())
         w.validate('a')
 
     if True:
-        x = RangeValidator(-10,10,types=(int,float))
+        x = RangeArgSpec(-10,10,types=(int,float))
         x.validate(0)
         x.validate(10)
         print(x.metametavar())

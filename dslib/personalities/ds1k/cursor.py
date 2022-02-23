@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'cursor_man': {
@@ -28,50 +28,50 @@ CONFIG = {
             },
             'cursor_manual_type': {
                 'base_str': ':CURSor:MANual:TYPE',
-                'validators': (
-                    validator.OptionValidator(('x','y')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('x','y')),
                 ),
             },
             'cursor_manual_source': {
                 'base_str': ':CURSor:MANual:SOUR',
-                'validators': (
-                    validator.OptionValidator(('chan1','chan2','chan3','chan4','math','la')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('chan1','chan2','chan3','chan4','math','la')),
                 ),
             },
             'cursor_manual_time_unit': {
                 'base_str': ':CURSor:MANual:TUN',
-                'validators': (
-                    validator.OptionValidator(('s','hz','degree','percent')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('s','hz','degree','percent')),
                 ),
             },
             'cursor_manual_vertical_unit': {
                 'base_str': ':CURSor:MANual:VUN',
-                'validators': (
-                    validator.OptionValidator(('percent','source')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('percent','source')),
                 ),
             },
             'cursor_manual_ax': {
                 'base_str': ':CURSor:MANual:AX',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:BX',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_manual_ay': {
                 'base_str': ':CURSor:MANual:AY',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:BY',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
         },
@@ -108,26 +108,26 @@ CONFIG = {
             },
             'cursor_track_source1': {
                 'base_str': ':CURSor:TRACk:SOURce1',
-                'validators': (
-                    validator.OptionValidator(('off', 'chan1','chan2','chan3','chan4','math')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('off', 'chan1','chan2','chan3','chan4','math')),
                 ),
             },
             'cursor_track_source2': {
                 'base_str': ':CURSor:TRACk:SOURce2',
-                'validators': (
-                    validator.OptionValidator(('off','chan1','chan2','chan3','chan4','math')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('off','chan1','chan2','chan3','chan4','math')),
                 ),
             },
             'cursor_track_ax': {
                 'base_str': ':CURSor:TRACk:AX',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_track_bx': {
                 'base_str': ':CURSor:TRACk:BX',
-                'validators': (
-                common_validators.cursor_pos,
+                'argspecs': (
+                common_argspecs.cursor_pos,
                 ),
             },
         },
@@ -178,26 +178,26 @@ CONFIG = {
             },
             'cursor_xy_ax': {
                 'base_str': ':CURSor:XY:AX',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_xy_ay': {
                 'base_str': ':CURSor:XY:AY',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_xy_bx': {
                 'base_str': ':CURSor:XY:BX',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
             'cursor_xy_by': {
                 'base_str': ':CURSor:XY:BY',
-                'validators': (
-                    common_validators.cursor_pos,
+                'argspecs': (
+                    common_argspecs.cursor_pos,
                 ),
             },
         }

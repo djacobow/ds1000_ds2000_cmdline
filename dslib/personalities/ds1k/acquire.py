@@ -1,4 +1,4 @@
-from ... import validator
+from ... import argspec
 
 CONFIG = {
     'acquire': {
@@ -6,22 +6,22 @@ CONFIG = {
         'commands': {
             'acq_average': {
                 'base_str': ':ACQ:AVER',
-                'validators': (
-                    validator.TypeValidator(int),
+                'argspecs': (
+                    argspec.TypeArgSpec(int),
                 ),
                 'rtype': 'int',
             },
             'acq_depth': {
                 'base_str': ':ACQ:MDEPTH',
-                'validators': (
-                    validator.TypeValidator(int),
+                'argspecs': (
+                    argspec.TypeArgSpec(int),
                 ),
                 'rtype': 'int',
             },
             'acq_type': {
                 'base_str': ':ACQ:TYPE',
-                'validators': (
-                    validator.TypeValidator(int),
+                'argspecs': (
+                    argspec.TypeArgSpec(int),
                 ),
             },
         },

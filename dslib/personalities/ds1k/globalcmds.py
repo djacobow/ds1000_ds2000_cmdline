@@ -1,4 +1,4 @@
-from ... import validator
+from ... import argspec
 
 CONFIG = {
     'global': {
@@ -66,8 +66,8 @@ CONFIG = {
             'cursor_mode': {
                 'help': 'get/set cursor mode',
                 'base_str': ':CURSor:MODE',
-                'validators': (
-                    validator.OptionValidator(('off','manual','track','auto','xy')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('off','manual','track','auto','xy')),
                 ),
             },
         },

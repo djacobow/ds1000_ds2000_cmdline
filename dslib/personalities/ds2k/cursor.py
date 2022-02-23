@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'cursor_man': {
@@ -28,56 +28,56 @@ CONFIG = {
             },
             'cursor_mode': {
                 'base_str': ':CURSor:MODE',
-                'validators': (
-                    validator.OptionValidator(('off','manual','track','auto','xy')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('off','manual','track','auto','xy')),
                 ),
             },
             'cursor_manual_type': {
                 'base_str': ':CURSor:MANual:TYPE',
-                'validators': (
-                    validator.OptionValidator(('time','amplitude')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('time','amplitude')),
                 ),
             },
             'cursor_manual_source': {
                 'base_str': ':CURSor:MANual:SOUR',
-                'validators': (
-                    validator.OptionValidator(('chan1','chan2','math','la','none')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('chan1','chan2','math','la','none')),
                 ),
             },
             'cursor_manual_time_unit': {
                 'base_str': ':CURSor:MANual:TUN',
-                'validators': (
-                    validator.OptionValidator(('s','hz','degree','percent')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('s','hz','degree','percent')),
                 ),
             },
             'cursor_manual_vertical_unit': {
                 'base_str': ':CURSor:MANual:VUN',
-                'validators': (
-                    validator.OptionValidator(('percent','sunit')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('percent','sunit')),
                 ),
             },
             'cursor_manual_ax': {
                 'base_str': ':CURSor:MANual:CAX',
-                'validators': (
-                    common_validators.cursor_pos_x,
+                'argspecs': (
+                    common_argspecs.cursor_pos_x,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:CBX',
-                'validators': (
-                    common_validators.cursor_pos_x,
+                'argspecs': (
+                    common_argspecs.cursor_pos_x,
                 ),
             },
             'cursor_manual_ay': {
                 'base_str': ':CURSor:MANual:CAY',
-                'validators': (
-                    common_validators.cursor_pos_y,
+                'argspecs': (
+                    common_argspecs.cursor_pos_y,
                 ),
             },
             'cursor_manual_bx': {
                 'base_str': ':CURSor:MANual:CBY',
-                'validators': (
-                    common_validators.cursor_pos_y,
+                'argspecs': (
+                    common_argspecs.cursor_pos_y,
                 ),
             },
         },
@@ -114,26 +114,26 @@ CONFIG = {
             },
             'cursor_track_source1': {
                 'base_str': ':CURSor:TRACk:SOURce1',
-                'validators': (
-                    validator.OptionValidator(('chan1','chan2','math','none')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('chan1','chan2','math','none')),
                 ),
             },
             'cursor_track_source2': {
                 'base_str': ':CURSor:TRACk:SOURce2',
-                'validators': (
-                    validator.OptionValidator(('chan1','chan2','math','none')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('chan1','chan2','math','none')),
                 ),
             },
             'cursor_track_ax': {
                 'base_str': ':CURSor:TRACk:CAX',
-                'validators': (
-                    common_validators.cursor_pos_x,
+                'argspecs': (
+                    common_argspecs.cursor_pos_x,
                 ),
             },
             'cursor_track_bx': {
                 'base_str': ':CURSor:TRACk:CBX',
-                'validators': (
-                    common_validators.cursor_pos_x,
+                'argspecs': (
+                    common_argspecs.cursor_pos_x,
                 ),
             },
         },

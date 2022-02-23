@@ -1,5 +1,5 @@
-from ... import validator
-from . import common_validators
+from ... import argspec
+from . import common_argspecs
 
 CONFIG = {
     'acquire': {
@@ -10,15 +10,15 @@ CONFIG = {
             },
             'acq_average': {
                 'base_str': ':ACQ:AVER',
-                'validators': (
-                    validator.RangeValidator(1,13,int),
+                'argspecs': (
+                    argspec.RangeArgSpec(1,13,int),
                 ),
                 'rtype': 'int',
             },
             'acq_depth': {
                 'base_str': ':ACQ:MDEPTH',
-                'validators': (
-                    validator.OptionValidator(
+                'argspecs': (
+                    argspec.OptionArgSpec(
                      ('auto','14000','140000','1400000', '14000000', '56000000',
                       '7000','70000','700000','7000000','28000000'),
                     ),
@@ -26,14 +26,14 @@ CONFIG = {
             },
             'acq_type': {
                 'base_str': ':ACQ:TYPE',
-                'validators': (
-                    validator.OptionValidator(('normal','averages','peak','hresolution')),
+                'argspecs': (
+                    argspec.OptionArgSpec(('normal','averages','peak','hresolution')),
                 ),
             },
             'acq_antialias': {
                 'base_str': ':ACQ:AALI',
-                'validators': (
-                    common_validators.on_off,
+                'argspecs': (
+                    common_argspecs.on_off,
                 ),
             },
         },
