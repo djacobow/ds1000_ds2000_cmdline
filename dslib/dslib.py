@@ -7,6 +7,7 @@ import re
 import socket
 
 from . import rigol_config
+from . import arg_wrangler
 
 def wrap1(param, func):
     def wrap2(*args, **kwargs):
@@ -237,81 +238,9 @@ class RigolScope(object):
             else:
                 return self._cmdo(cmd)
 
-    def expand_cmd_strs(self, config, vcount=None):
-        base_str = config.get('base_str')
-        if config.get('q_str') is None:
-            if base_str is None:
-               raise Exception('Either q_str or base_str must be set')
-            else:
-               config['q_str'] = base_str + '?'
-
-        if config.get('set_str') is None:
-            if base_str is None:
-               raise Exception('Either set_str or base_str must be set')
-            else:
-               if vcount is None:
-                   config['set_str'] = base_str + ' {a0}'
-               else:
-                   config['set_str'] = base_str + ' {{a{vcount-1}}}'
-
-    def convert_to_type(self, tt, r_raw):
-        if tt=='float' or tt==float:
-            return float(r_raw)
-        elif tt=='int' or tt==int:
-            return int(r_raw)
-        return r_raw
-
-    def convert_to_rtype(self, config, r_raw):
-        return self.convert_to_type(config.get('rtype','str'), r_raw)
-
 
     def generic_func_wrapper(self, config, *args):
-        #print('START','args',args,'types',[repr(type(x)) for x in args])
-        name = config.get('name','<unknown>')
-
-        argspecs = config.get('argspecs',())
-        vcount = len(argspecs)
-
-        acount = len(args)
-
-        # if this command had one (optional) argument, and it is
-        # not present, we just make sure the count is set to 0
-        if acount == 1 and isinstance(args[0],str) and len(args[0]) == 0:
-            acount = 0
-
-        # one argument can be either really one argument, or it can
-        # be a ':' concatenated series of arguments. Try to split on
-        # colons, and if we get more than we started with, we know
-        # that's what we had
-        if acount == 1:
-            splitargs = args[0].split(':')
-            splitcount = len(splitargs)
-            if splitcount > 1:
-               acount = splitcount
-               if acount > vcount:
-                   raise Exception(f'For function {name}: Provided argument {args[0]} splits into {acount} parts; too many for required {vcount} arguments')
-               args = []
-               for i in range(splitcount):
-                   args.append(splitargs[i])
-
-        # now that we have (maybe) split the args, let's try to convert
-        # them to the types the argspec expects
-        converted_args = []
-        for i in range(acount):
-            converted_args.append(self.convert_to_type(argspecs[i].ttype(), args[i]))
-        args = converted_args
-
-        if acount < (vcount - 1):
-            raise Exception(f'For function {name}: expects {vcount} (set) or {vcount-1} (get) arguments, only {acount} provided')
-       
-        # now make sure the arguments are actually acceptable to the command
-        # argspec raises if not
-        for i in range(acount):
-            (ok, reason) = argspecs[i].validate(args[i])
-            if not ok:
-                raise Exception(f'For function {name} argument {i}: {reason}')
-
-        d = { f'a{i}' : args[i] for i in range(acount) }
+        wrangled = arg_wrangler.ArgumentWrangler(config, args)
 
         func = config.get('func')
         cmd  = config.get('cmd')
@@ -322,20 +251,15 @@ class RigolScope(object):
                raise Exception(f'For function {name}: {func} is not callable')
            return config['func'](self, args)
         elif cmd is not None:
-            is_query = re.search(r'.*\?$', cmd)    
-            if is_query:
+            if wrangled.isQuery():
                 return self.cmd(cmd)
             else:
                 return self._cmdo(cmd)
         else:
-            self.expand_cmd_strs(config)
-            is_query = False
-            if vcount > 0 and acount == (vcount - 1):
-                is_query = True
-            if is_query:
-                return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
+            if wrangled.isQuery():
+                return wrangled.convert_to_rtype(config, self.cmd(config.get('q_str').format(**wrangled.argdict())))
             else:
-               self._cmdo(config.get('set_str').format(**d))
+               self._cmdo(config.get('set_str').format(**wrangled.argdict()))
 
 
 if __name__ == '__main__':
