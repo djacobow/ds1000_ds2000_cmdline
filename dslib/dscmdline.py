@@ -31,7 +31,9 @@ class RigolCmdLine(object):
         )
 
         self.r.makeArgs(parser)
-        return parser.parse_args()
+        args = parser.parse_args()
+        # print(json.dumps(vars(args),indent=2))
+        return args
 
     def go(self):
         res = self.r.dispatchArgs(self.args)

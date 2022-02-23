@@ -149,7 +149,7 @@ CONFIG = {
                     validator.RangeValidator(5,8,int),
                 ),
             },
-            'decoder_uart_width': {
+            'decoder_uart_stop': {
                 'q_str':   ':DEC{a0}:UART:STOP?',
                 'set_str': ':DEC{a0}:UART:STOP {a1}',
                 'validators': (

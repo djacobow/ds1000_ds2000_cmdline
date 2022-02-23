@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datetime
+import itertools
 import math
 import re
 import socket
@@ -8,9 +9,9 @@ import socket
 from . import rigol_config
 
 def wrap1(param, func):
-    def wrap3(*args, **kwargs):
+    def wrap2(*args, **kwargs):
         return func(param, *args, **kwargs)
-    return wrap3
+    return wrap2
 
 class RigolScope(object):
     def __init__(self, ip=None, personality='ds1k'):
@@ -19,17 +20,11 @@ class RigolScope(object):
         if self.configs is None:
             raise Exception(f'Do not know how to talk to {personality} type scope.')
 
-        groups_config = (
-            ('simple_2_args',  self._wrapped_2set_1query_argument_function),
-            ('simple_1_args',  self._wrapped_1set_0query_argument_function),
-            ('simple_0_args',  self._wrapped_0_argument_function),
-            ('real_functions', self._unwrapped_function),
-        )
-        for gc in groups_config:
-            for gname, gconfig in self.configs.get(gc[0],{}).items():
-                for name, config in gconfig.get('commands',{}).items():
-                    wrapped_fn = wrap1(config, gc[1])
-                    setattr(self, name, wrapped_fn)
+        for (gname,gconfig) in self.configs.items():
+            for name, config in gconfig.get('commands',{}).items():
+                config['name'] = name
+                wrapped_fn = wrap1(config, self.generic_func_wrapper)
+                setattr(self, name, wrapped_fn)
 
         if ip is not None:
             self.connect(ip)
@@ -48,7 +43,7 @@ class RigolScope(object):
             # print(self.arg_handlers.keys())
             if aname in self.arg_handlers:
                 #print('we know this')
-                if aval is not None:
+                if aval is not None and aval is not False:
                     # print('aname',aname,'aval',aval)
                     if aval == True:
                         rv = self.arg_handlers[aname]()
@@ -72,9 +67,14 @@ class RigolScope(object):
             metametavars = []
             for validator_idx in range(num_validators):
                 validator = validators[validator_idx]
-                final = validator_idx = num_validators-1
+                final = validator_idx == num_validators-1
                 mmv = validator.metametavar()
-                if final:
+                # if there is only on arg and it is optional,
+                # then argparse will add the brackets. But if there
+                # is more than one, we need to add them because 
+                # as far as argparse is concerned, they are all just
+                # shmooshed together as one
+                if final and num_validators != 1:
                     mmv = ''.join(['[',mmv,']'])
                 metametavars.append(mmv)
 
@@ -84,133 +84,86 @@ class RigolScope(object):
 
             return metavar
 
+        def enumerate_arg_choices(validators):
+            choices = None
+            set_choices_list = [ v.choices() for v in validators ]
+            set_choices = None
+            if not None in set_choices_list:
+                set_choices = [
+                    ':'.join(
+                        [str(x) for x in t]
+                    ) for t in itertools.product(*set_choices_list)
+                ]
 
-        def make_parseargs_for_unwrapped_function(parser_group, gconfig):
+            get_choices_list = set_choices_list
+            get_choices = None
+            if len(get_choices_list):
+                get_choices_list.pop()
+            if len(get_choices_list) and not None in get_choices_list:
+                get_choices = [
+                    ':'.join(
+                        [str(x) for x in t]
+                    ) for t in itertools.product(*get_choices_list)
+                ]
+
+            if get_choices is not None and set_choices is not None:
+                choices = set_choices + get_choices
+            return choices
+
+
+        def make_parseargs_generic(parser_group, gconfig):
             for name, config in gconfig.get('commands',{}).items():
                 aname = re.sub(r'_','-',name)
                 validators = config.get('validators',())
                 num_validators = len(validators)
                 self.arg_handlers[name] = getattr(self, name)
 
-                metavar = makeMetavars(validators)
+                flag_name = '--' + aname
+                if num_validators == 0:
+                    parser_group.add_argument(
+                        flag_name,
+                        action='store_true',
+                        help=config.get('help'),
+                    ) 
 
-                parser_group.add_argument(
-                    '--' + aname,
-                    default=None,
-                    type=str,
-                    metavar=metavar,
-                    help=config.get('help'),
-                ) 
-
-        def make_parseargs_for_0arg_functions(parser_group, gconfig):
-            for name, config in gconfig.get('commands',{}).items():
-                aname = re.sub(r'_','-',name)
-                is_query = re.search(r'.*\?$',config['cmd'])
-                self.arg_handlers[name] = getattr(self, name)
-                parser_group.add_argument(
-                    '--' + aname,
-                    default=None,
-                    action='store_true',
-                    help=config.get('help'),
-                ) 
-
-        def make_parseargs_for_1arg_functions(parser_group, gconfig):
-            for name, config in gconfig.get('commands',{}).items():
-                
-                aname = re.sub(r'_','-',name)
-                validators = config.get('validators',())
-                num_validators = len(validators)
-    
-                if num_validators != 1:
-                    print(validators)
-                    raise Exception(f'One-arg functions should have only one arg: {name} {num_validators}!')
-    
-                self.arg_handlers[name + '']       = getattr(self, name)
-    
-                choices = validators[0].choices()
-                ttype = validators[0].ttype()
-    
-                const = False
-                if ttype == float:
-                    const = float('Nan')
-                elif ttype == int:
-                    const = float('Nan')
                 else:
-                    if choices is not None:
-                        choices = tuple(list(choices) + [''])
-                    const = ''
+                    choices = enumerate_arg_choices(validators)
+                    metavar = makeMetavars(validators)
 
-                metavar = makeMetavars(validators)
+                    if num_validators == 1:
+                        parser_group.add_argument(
+                            flag_name,
+                            nargs='?',
+                            metavar=metavar,
+                            const='',
+                            type=str,
+                            choices=choices,
+                            help=config.get('help',None), 
+                        )
+                    else:
+                        parser_group.add_argument(
+                            flag_name,
+                            nargs=1,
+                            metavar=metavar,
+                            type=str,
+                            choices=choices,
+                            help=config.get('help',None), 
+                        )
 
-                parser_group.add_argument(
-                    '--' + aname + '',
-                    nargs='?',
-                    const=const,
-                    default=None,
-                    type=ttype,
-                    choices=choices,
-                    metavar=metavar,
-                    help=config.get('help',None), 
-                )
-
-
-        def make_parseargs_for_2arg_functions(parser_group, gconfig):
-            for name, config in gconfig.get('commands',{}).items():
-                aname = re.sub(r'_','-',name)
-                validators = config.get('validators',())
-                num_validators = len(validators)
-                self.arg_handlers[name] = getattr(self, name)
-    
-                if num_validators < 2:
-                   raise Exception(f'Error config for {aname} is wrong; should have at least 2 validators')
-    
-                choices_0 = validators[0].choices()
-                choices_1 = validators[1].choices()
-                choices = None
-                if num_validators == 2:
-                    if choices_0 is not None and choices_1 is not None:
-                        choices = []
-                        for ch0 in choices_0:
-                            choices += [ f'{ch0}' ]
-                            choices += [ f'{ch0}:{ch1}' for ch1 in choices_1 ]
-
-                elif num_validators == 3:
-                    metavar='dec#:ch#:value or dec#:ch#'
-   
-                metavar = makeMetavars(validators)
-
-                parser_group.add_argument(
-                    '--' + aname,
-                    nargs='?',
-                    metavar=metavar,
-                    const='',
-                    type=str,
-                    choices=choices,
-                    help=config.get('help',None), 
-                )
-
-        command_types = (
-            ('simple_0_args',  make_parseargs_for_0arg_functions),
-            ('simple_1_args',  make_parseargs_for_1arg_functions),
-            ('simple_2_args',  make_parseargs_for_2arg_functions),
-            ('real_functions', make_parseargs_for_unwrapped_function),
-        ) 
 
         parser_groups = {}
 
-        for command_type in command_types:
-            for gname, gconfig in self.configs.get(command_type[0],{}).items():
+        for gname, gconfig in self.configs.items():
+            if not gname in parser_groups:
+                parser_group = parser.add_argument_group(
+                    title=gconfig.get('name',''),
+                    description=gconfig.get('description',None),
+                )
+                parser_groups[gname] = parser_group
+            else: 
+                parser_group = parser_groups[gname]
 
-                if not gname in parser_groups:
-                    parser_group = parser.add_argument_group(
-                        title=gconfig.get('name',''),
-                        description=gconfig.get('description',None),
-                    )
-                    parser_groups[gname] = parser_group
-                else: 
-                    parser_group = parser_groups[gname]
-
-                command_type[1](parser_group, gconfig)
+            make_parseargs_generic(parser_group, gconfig)
 
 
     def _cmdo(self, c, bdata=None):
@@ -284,7 +237,7 @@ class RigolScope(object):
             else:
                 return self._cmdo(cmd)
 
-    def expand_cmd_strs(self, config):
+    def expand_cmd_strs(self, config, vcount=None):
         base_str = config.get('base_str')
         if config.get('q_str') is None:
             if base_str is None:
@@ -296,10 +249,12 @@ class RigolScope(object):
             if base_str is None:
                raise Exception('Either set_str or base_str must be set')
             else:
-               config['set_str'] = base_str + ' {a0}'
+               if vcount is None:
+                   config['set_str'] = base_str + ' {a0}'
+               else:
+                   config['set_str'] = base_str + ' {{a{vcount-1}}}'
 
     def convert_to_type(self, tt, r_raw):
-        print('r_raw',type(r_raw),r_raw)
         if tt=='float' or tt==float:
             return float(r_raw)
         elif tt=='int' or tt==int:
@@ -310,94 +265,78 @@ class RigolScope(object):
         return self.convert_to_type(config.get('rtype','str'), r_raw)
 
 
-    def _unwrapped_function(self, config, *args):
-        acount = len(args)
+    def generic_func_wrapper(self, config, *args):
+        #print('START','args',args,'types',[repr(type(x)) for x in args])
+        name = config.get('name','<unknown>')
+
         validators = config.get('validators',())
         vcount = len(validators)
 
-        subargs = []
-
-        if acount == vcount:
-            subargs = args
-        elif acount == 1:
-            subargs = args[0].split(':')
-            converted_subargs = []
-            for i in range(len(subargs)):
-                converted_subargs.append(
-                    self.convert_to_type(validators[i].ttype(), subargs[i])
-                )
-            subargs = converted_subargs
-
-        for i in range(len(subargs)):
-            config['validators'][i].validate(subargs[i])
-
-        config['func'](self, subargs)
-
-
-
-    def _wrapped_2set_1query_argument_function(self, config, *args):
         acount = len(args)
-        validators = config.get('validators',())
-        vcount = len(validators)
 
-        if vcount < 2:
-            raise Exception(f'configuration error; expect at leat 2 validators ({vcount})')
+        # if this command had one (optional) argument, and it is
+        # not present, we just make sure the count is set to 0
+        if acount == 1 and isinstance(args[0],str) and len(args[0]) == 0:
+            acount = 0
 
-        subargs = []
+        # one argument can be either really one argument, or it can
+        # be a ':' concatenated series of arguments. Try to split on
+        # colons, and if we get more than we started with, we know
+        # that's what we had
+        if acount == 1:
+            splitargs = args[0].split(':')
+            splitcount = len(splitargs)
+            if splitcount > 1:
+               acount = splitcount
+               if acount > vcount:
+                   raise Exception(f'For function {name}: Provided argument {args[0]} splits into {acount} parts; too many for required {vcount} arguments')
+               args = []
+               for i in range(splitcount):
+                   args.append(splitargs[i])
 
-        if acount == vcount:
-            subargs = args
-        elif acount == 1 and len(args[0]):
-            subargs = args[0].split(':')
-            converted_subargs = []
-            for i in range(len(subargs)):
-                converted_subargs.append(self.convert_to_type(validators[i].ttype(), subargs[i]))
-            subargs = converted_subargs
-        self.expand_cmd_strs(config)
+        # now that we have (maybe) split the args, let's try to convert
+        # them to the types the validator expects
+        converted_args = []
+        for i in range(acount):
+            converted_args.append(self.convert_to_type(validators[i].ttype(), args[i]))
+        args = converted_args
 
-        is_query = len(subargs) < vcount
+        if acount < (vcount - 1):
+            raise Exception(f'For function {name}: expects {vcount} (set) or {vcount-1} (get) arguments, only {acount} provided')
+       
+        # now make sure the arguments are actually acceptable to the command
+        # validator raises if not
+        for i in range(acount):
+            (ok, reason) = validators[i].validate(args[i])
+            if not ok:
+                raise Exception(f'For function {name} argument {i}: {reason}')
 
-        d = { f'a{i}' : subargs[i] for i in range(len(subargs)) }
+        d = { f'a{i}' : args[i] for i in range(acount) }
 
-        for i in range(len(subargs)):
-            config['validators'][i].validate(subargs[i])
+        func = config.get('func')
+        cmd  = config.get('cmd')
 
-        if is_query:
-            return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
+        # dispatch the command depending on the type
+        if func is not None:
+           if not callable(func):
+               raise Exception(f'For function {name}: {func} is not callable')
+           return config['func'](self, args)
+        elif cmd is not None:
+            is_query = re.search(r'.*\?$', cmd)    
+            if is_query:
+                return self.cmd(cmd)
+            else:
+                return self._cmdo(cmd)
         else:
-           self._cmdo(config.get('set_str').format(**d))
+            self.expand_cmd_strs(config)
+            is_query = False
+            if vcount > 0 and acount == (vcount - 1):
+                is_query = True
+            if is_query:
+                return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
+            else:
+               self._cmdo(config.get('set_str').format(**d))
 
-
-    def _wrapped_1set_0query_argument_function(self, config, *args):
-        acount = len(args)
-        validators = config.get('validators',())
-        vcount = len(validators)
-
-        if vcount > 1:
-            raise Exception(f'configuration error; too many validators ({vcount})')
-        if acount > 1:
-            raise Exception(f'configuration error; too many argument ({acount})')
-
-        is_query = False
-        if acount == 0: 
-            is_query = True
-        elif isinstance(args[0],float) and math.isnan(args[0]):
-            is_query = True
-        elif isinstance(args[0],str) and len(args[0]) == 0:
-            is_query = True
-
-        self.expand_cmd_strs(config)
-
-        d = {}
-        if not is_query:
-            in_arg = args[0]
-            validator = validators[0]
-            validator.validate(in_arg)
-            d['a0'] = in_arg
-            self._cmdo(config.get('set_str').format(**d))
-
-        else:
-            return self.convert_to_rtype(config, self.cmd(config.get('q_str').format(**d)))
 
 if __name__ == '__main__':
     pass

@@ -13,9 +13,9 @@ measure_source = validator.OptionValidator(
 )
 
 decoder_number = validator.OptionValidator((1,2), types=int)
-channel_number = validator.OptionValidator((1,2,3,5), types=int)
+channel_number = validator.OptionValidator((1,2,3,4), types=int)
 on_off         = validator.OptionValidator((1,0,'on','off'), types=(str,int,))
-is_percent     = validator. RangeValidator(0,100,int)
+is_percent     = validator.RangeValidator(0,100,int)
 cursor_pos     = validator.RangeValidator(5, 594,int)
 neg_pos        = validator.OptionValidator(('negative','positive'))
 ip_addr        = validator.FunctionValidator(lambda x: re.match('^(\d+)\.(\d+)\.(\d+)\.(\d+)$',x), message='<ip_addr>')

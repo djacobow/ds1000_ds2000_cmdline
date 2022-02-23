@@ -22,20 +22,18 @@ class OptionValidator(Validator):
 
     def validate(self, x):
         if not isinstance(x, self.types):
-            raise Exception(f'argument provided ({x}) of type {type(x)} must be one of: {", ".join(self.types)}')
-            return False
+            return (False, f'argument provided ({x}) of type {type(x)} must be one of: {", ".join([repr(x) for x in self.types])}')
         if isinstance(x, str):
            x = x.lower()
         if not x in self.options: 
-            raise Exception(f'argument provided ({x}) must be one of {", ".join(self.options)}')
-            return False
-        return True
+            return (False, f'argument provided ({x}) must be one of {", ".join([repr(x) for x in self.options])}')
+        return (True, None)
 
     def metametavar(self):
         return f"{{{','.join([str(x) for x in self.options])}}}"
 
-    def choicces(self):
-        return self.l
+    def choices(self):
+        return self.options
 
 
 class TypeValidator(Validator):
@@ -44,9 +42,8 @@ class TypeValidator(Validator):
 
     def validate(self, x):
         if not isinstance(x,self.types):
-            raise Exception(f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
-            return False
-        return True
+            return (False, f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
+        return (True, None)
  
     def metametavar(self):
         tstr = re.sub(f',$','',re.sub(r'(\(|\)|class|\'|\s)','',repr(self.types)))
@@ -63,12 +60,11 @@ class RangeValidator(Validator):
 
     def validate(self, x):
         if not isinstance(x,self.types):
-            raise Exception(f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
-            return False
+            return (False, f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
+
         if not (self.rmin <= x and x <= self.rmax):
-            raise Exception(f'Argument is ({x}) not in range [{self.rmin},{self.rmax}]')
-            return False
-        return True
+            return (False, f'Argument is ({x}) not in range [{self.rmin},{self.rmax}]')
+        return (True, None)
 
     def metametavar(self):
         tstr = re.sub(f',$','',re.sub(r'(\(|\)|class|\'|\s)','',repr(self.types)))
@@ -84,14 +80,12 @@ class FunctionValidator(Validator):
 
     def validate(self, x):
         if not isinstance(x,self.types):
-            raise Exception(f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
-            return False
+            return (False, f'Argument is of type {type(x)}; but one of {repr(self.types)} required')
       
         ok = self.func(x)
         if not ok:
-            raise Exception(f'Argument {x} did not pass Func {repr(self.func)}')
-            return False
-        return True
+            return (False, f'Argument {x} did not pass Func {repr(self.func)}')
+        return (True, None)
 
     def metametavar(self):
         return self.message
