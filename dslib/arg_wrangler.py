@@ -10,7 +10,7 @@ class ArgumentWrangler(object):
         argspecs = self._config.get('argspecs',())
         vcount = len(argspecs)
         acount = len(self._inargs)
-    
+   
         # if this command had one (optional) argument, and it is
         # not present, we just make sure the count is set to 0
         if acount == 1 and isinstance(self._inargs[0],str) and len(self._inargs[0]) == 0:
@@ -29,7 +29,6 @@ class ArgumentWrangler(object):
                if acount > vcount:
                    raise Exception(f'For function {self._name}: Provided argument {args[0]} splits into {acount} parts; too many for required {vcount} arguments')
                args = splitargs
-    
         # now that we have (maybe) split the args, let's try to convert
         # them to the types the argspec expects
         converted_args = []
@@ -102,3 +101,6 @@ class ArgumentWrangler(object):
 
     def argdict(self):
         return self._adict
+
+    def args(self):
+        return self._outargs

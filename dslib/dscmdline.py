@@ -2,14 +2,10 @@
 
 import argparse
 import json
-import textwrap
 import os
+import textwrap as _textwrap
 
 import dslib
-
-
-import argparse
-import textwrap as _textwrap
 
 class RigolCmdLine(object):
     def __init__(self, personality='ds1k'):
@@ -30,7 +26,7 @@ class RigolCmdLine(object):
             default='192.168.1.246' if self.personality == 'ds1k' else '192.168.1.210',
         )
 
-        self.r.makeArgs(parser)
+        self.r.addArgs(parser)
         args = parser.parse_args()
         # print(json.dumps(vars(args),indent=2))
         return args
