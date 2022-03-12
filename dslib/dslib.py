@@ -65,16 +65,16 @@ class RigolScope(object):
             s = c + '\n'
             b = s.encode('utf-8',errors='replace')
             self.s.send(b)
-            print('-->',b)
+            #print('-->',b)
         else:
             b = (c + ' ').encode('utf-8',errors='replace')
             b += bdata
             self.s.send(b)
-            print('-->',c)
+            #print('-->',c)
   
     def _cmdi(self):
         r = self.sr.readline().decode('ascii').strip()
-        print('<--',r)
+        #print('<--',r)
         return r
 
     def cmd(self, c):

@@ -25,7 +25,7 @@ class OptionArgSpec(ArgSpec):
             return (False, f'argument provided ({x}) of type {type(x)} must be one of: {", ".join([repr(x) for x in self.types])}')
         if isinstance(x, str):
            x = x.lower()
-        print('x',x,'type',type(x))
+        # print('x',x,'type',type(x))
         if not x in self.options: 
             return (False, f'argument provided ({x}) must be one of {", ".join([repr(x) for x in self.options])}')
         return (True, None)
