@@ -15,6 +15,7 @@ personality_configs = {
         personalities.ds1k.storage.CONFIG,
         personalities.ds1k.system.CONFIG,
         personalities.ds1k.trigger.CONFIG,
+        personalities.ds1k.waveform.CONFIG,
     ),
     'ds2k': (
         personalities.ds2k.globalcmds.CONFIG,

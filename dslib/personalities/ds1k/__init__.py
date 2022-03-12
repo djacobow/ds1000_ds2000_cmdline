@@ -10,5 +10,6 @@ from . import measure
 from . import network
 from . import storage 
 from . import system 
+from . import waveform
 from . import trigger
 
