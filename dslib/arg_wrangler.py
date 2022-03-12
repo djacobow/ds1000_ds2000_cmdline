@@ -39,6 +39,11 @@ class ArgumentWrangler(object):
         if acount < (vcount - 1):
             raise Exception(f'For function {self._name}: expects {vcount} (set) or {vcount-1} (get) arguments, only {acount} provided')
        
+
+        min_acount = self._config.get('min_argcount')
+        if min_acount is not None and acount < min_acount:
+            raise Exception(f'For function {self._name}: requires {min_acount} arguments. Only {acount} provided')
+ 
         # now make sure the arguments are actually acceptable to the command
         # argspec raises if not
         for i in range(acount):

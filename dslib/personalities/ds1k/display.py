@@ -38,7 +38,9 @@ CONFIG = {
             'thingy': {
                 'func': thingyHandler,
                 'help': 'Runs the thingy function',
+                'min_argcount': 2,
                 'argspecs': (
+                    argspec.RegexArgSpec(pattern=r'^([1234])(,\s*[1234]+)*$'),
                     argspec.RegexArgSpec(pattern=r'^([1234])(,\s*[1234]+)*$'),
                 )
             },
