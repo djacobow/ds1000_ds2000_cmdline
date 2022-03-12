@@ -24,17 +24,15 @@ def download_data(rs, args):
         data = [float(d) for d in data.split(',')]
         outputs.append(data)
 
-    output = zip(*outputs)
-
     if len(args) == 2:
         fn = args[1]
         with open(fn, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(channels)
-            csvwriter.writerows(output)
+            csvwriter.writerows(zip(*outputs))
             return f"Output written to {fn}"
     else:
-        return list(output)
+        return {channels[i]: outputs[i] for i in range(len(channels))}
 
 CONFIG = {
     'waveform': {
