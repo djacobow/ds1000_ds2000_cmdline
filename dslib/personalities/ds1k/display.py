@@ -26,10 +26,22 @@ def screenCap(rs, args):
     return fn
 
 
+def thingyHandler(rs, args):
+    print('ThingyHandler!')
+    print(args)
+
+
 CONFIG = {
     'display': {
         'name': 'Display',
         'commands': {
+            'thingy': {
+                'func': thingyHandler,
+                'help': 'Runs the thingy function',
+                'argspecs': (
+                    argspec.RegexArgSpec(pattern=r'^([1234])(,\s*[1234]+)*$'),
+                )
+            },
             'capture': {
                 'func': screenCap,
                 'help': 'Save an image to disk exactly as it appears on sreen, in color or bw, or with the colors inverted',

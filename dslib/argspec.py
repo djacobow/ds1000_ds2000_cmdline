@@ -15,6 +15,23 @@ class ArgSpec(object):
     def ttype(self):
         return self.types[0]
 
+class RegexArgSpec(ArgSpec):
+    def __init__(self, pattern=r'', types=(str,)):
+        self.types = types if isinstance(types,(list,tuple,)) else tuple([types])
+        self.pattern = pattern
+    def validate(self, x):
+        if not isinstance(x, self.types):
+            return (False, f'argument provided ({x}) of type {type(x)} must be one of: {", ".join([repr(x) for x in self.types])}')
+        if isinstance(x, str):
+            x = x.lower()
+        if not re.search(self.pattern, x):
+            return (False, f'argument provided ({x}) did not match pattern: {self.pattern}')
+        return (True, None)
+
+    def metametavar(self):
+        return f"string matching r'{self.pattern}'"
+
+
 class OptionArgSpec(ArgSpec):
     def __init__(self, l, types=(str,)):
         self.types = types if isinstance(types,(list,tuple,)) else tuple([types])
