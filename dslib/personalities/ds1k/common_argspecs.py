@@ -18,5 +18,5 @@ on_off         = argspec.OptionArgSpec(('1','0',1,0,'on','off'), types=(str,int,
 is_percent     = argspec.RangeArgSpec(0,100,int)
 cursor_pos     = argspec.RangeArgSpec(5, 594,int)
 neg_pos        = argspec.OptionArgSpec(('negative','positive'))
-ip_addr        = argspec.FunctionArgSpec(lambda x: re.match('^(\d+)\.(\d+)\.(\d+)\.(\d+)$',x), message='<ip_addr>')
+ip_addr        = argspec.FunctionArgSpec(lambda x: re.match(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$',x), message='<ip_addr>')
 
